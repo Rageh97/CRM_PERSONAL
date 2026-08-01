@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { deleteInvoice } from '@/features/invoices/actions';
@@ -20,22 +20,40 @@ const categoryBadge: Record<string, string> = {
   SALARY: 'bg-purple-50 text-purple-800 border-purple-300 dark:bg-purple-950/60 dark:text-purple-300 dark:border-purple-800',
 };
 
+const ITEMS_PER_PAGE = 20;
+
 export function InvoiceList({ invoices, userRole, userPermissions = [] }: InvoiceListProps) {
   const router = useRouter();
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const canEdit = hasPermission(userRole, userPermissions, 'invoices:edit');
   const canDelete = hasPermission(userRole, userPermissions, 'invoices:delete');
 
-  const filtered = invoices.filter((inv) => {
-    const matchSearch = !search || 
-      inv.name.toLowerCase().includes(search.toLowerCase()) ||
-      inv.invoiceNumber.toLowerCase().includes(search.toLowerCase());
-    const matchCategory = !categoryFilter || inv.category === categoryFilter;
-    return matchSearch && matchCategory;
-  });
+  // Filtered invoices
+  const filtered = useMemo(() => {
+    return invoices.filter((inv) => {
+      const matchSearch = !search || 
+        inv.name.toLowerCase().includes(search.toLowerCase()) ||
+        inv.invoiceNumber.toLowerCase().includes(search.toLowerCase());
+      const matchCategory = !categoryFilter || inv.category === categoryFilter;
+      return matchSearch && matchCategory;
+    });
+  }, [invoices, search, categoryFilter]);
+
+  // Reset page when filter changes
+  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE) || 1;
+  const validPage = Math.min(currentPage, totalPages);
+
+  const paginatedInvoices = useMemo(() => {
+    const start = (validPage - 1) * ITEMS_PER_PAGE;
+    return filtered.slice(start, start + ITEMS_PER_PAGE);
+  }, [filtered, validPage]);
+
+  const startIndex = (validPage - 1) * ITEMS_PER_PAGE + 1;
+  const endIndex = Math.min(validPage * ITEMS_PER_PAGE, filtered.length);
 
   const handleDelete = async (id: string) => {
     if (!confirm('هل أنت متأكد من حذف هذه الفاتورة؟')) return;
@@ -108,23 +126,29 @@ export function InvoiceList({ invoices, userRole, userPermissions = [] }: Invoic
 
   return (
     <div className="space-y-4 w-full max-w-full min-w-0">
-      {/* Filters */}
+      {/* Search & Category Filter Bar */}
       <div className="flex flex-col sm:flex-row gap-3 w-full">
         <div className="relative flex-1 w-full">
           <input
             type="text"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setCurrentPage(1);
+            }}
             placeholder="بحث بالاسم أو رقم الفاتورة..."
-            className="w-full px-3.5 py-2.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-md text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-slate-900 transition-colors"
+            className="w-full px-3.5 py-2.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-md text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-blue-600 transition-colors"
           />
         </div>
         <select
           value={categoryFilter}
-          onChange={(e) => setCategoryFilter(e.target.value)}
+          onChange={(e) => {
+            setCategoryFilter(e.target.value);
+            setCurrentPage(1);
+          }}
           className="w-full sm:w-auto px-3.5 py-2.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-md text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none transition-colors"
         >
-          <option value="">كل التصنيفات</option>
+          <option value="">كل التصنيفات ({invoices.length})</option>
           {Object.entries(CATEGORY_LABELS).map(([k, v]) => (
             <option key={k} value={k}>{v}</option>
           ))}
@@ -133,13 +157,13 @@ export function InvoiceList({ invoices, userRole, userPermissions = [] }: Invoic
 
       {filtered.length === 0 ? (
         <div className="text-center py-12 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-500 text-xs font-medium">
-          لا توجد فواتير مطابقة
+          لا توجد فواتير مطابقة للبحث
         </div>
       ) : (
         <>
-          {/* Mobile Card List View (hidden on md and larger) */}
+          {/* Mobile Cards View */}
           <div className="md:hidden space-y-3 w-full max-w-full min-w-0">
-            {filtered.map((inv) => (
+            {paginatedInvoices.map((inv) => (
               <div
                 key={inv.id}
                 className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-3.5 shadow-xs space-y-2.5"
@@ -167,7 +191,6 @@ export function InvoiceList({ invoices, userRole, userPermissions = [] }: Invoic
                   </span>
                 </div>
 
-                {/* Actions Row on Mobile */}
                 <div className="flex items-center gap-1.5 pt-2 border-t border-slate-100 dark:border-slate-800">
                   <Link
                     href={`/dashboard/invoices/${inv.id}`}
@@ -178,7 +201,7 @@ export function InvoiceList({ invoices, userRole, userPermissions = [] }: Invoic
                   {canEdit && (
                     <Link
                       href={`/dashboard/invoices/${inv.id}/edit`}
-                      className="flex-1 text-center py-1.5 text-xs font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950 rounded border border-indigo-200 dark:border-indigo-800"
+                      className="flex-1 text-center py-1.5 text-xs font-bold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950 rounded border border-blue-200 dark:border-blue-800"
                     >
                       تعديل
                     </Link>
@@ -203,7 +226,7 @@ export function InvoiceList({ invoices, userRole, userPermissions = [] }: Invoic
             ))}
           </div>
 
-          {/* Desktop Table View (hidden on mobile, visible on md and larger) */}
+          {/* Desktop Table View */}
           <div className="hidden md:block bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-xs overflow-hidden w-full max-w-full min-w-0">
             <div className="w-full overflow-x-auto">
               <table className="w-full text-right border-collapse text-xs">
@@ -218,7 +241,7 @@ export function InvoiceList({ invoices, userRole, userPermissions = [] }: Invoic
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
-                  {filtered.map((inv) => (
+                  {paginatedInvoices.map((inv) => (
                     <tr key={inv.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                       <td className="p-3.5 font-bold font-mono text-slate-900 dark:text-white" dir="ltr text-right">
                         {inv.invoiceNumber}
@@ -253,7 +276,7 @@ export function InvoiceList({ invoices, userRole, userPermissions = [] }: Invoic
                           {canEdit && (
                             <Link
                               href={`/dashboard/invoices/${inv.id}/edit`}
-                              className="px-2.5 py-1 text-xs font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/80 rounded-md border border-indigo-200 dark:border-indigo-800 transition-colors"
+                              className="px-2.5 py-1 text-xs font-bold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/60 hover:bg-blue-100 dark:hover:bg-blue-900/80 rounded-md border border-blue-200 dark:border-blue-800 transition-colors"
                             >
                               تعديل
                             </Link>
@@ -281,6 +304,53 @@ export function InvoiceList({ invoices, userRole, userPermissions = [] }: Invoic
               </table>
             </div>
           </div>
+
+          {/* Corporate Professional Pagination Bar */}
+          {filtered.length > 0 && (
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md p-3 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+              <div className="text-slate-600 dark:text-slate-400 font-semibold">
+                عرض <span className="font-bold text-slate-900 dark:text-white">{startIndex}</span> إلى{' '}
+                <span className="font-bold text-slate-900 dark:text-white">{endIndex}</span> من إجمالي{' '}
+                <span className="font-bold text-blue-600 dark:text-blue-400">{filtered.length}</span> فاتورة
+              </div>
+
+              {totalPages > 1 && (
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                    disabled={validPage === 1}
+                    className="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md font-bold text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    السابق
+                  </button>
+
+                  <div className="flex gap-1">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                      <button
+                        key={p}
+                        onClick={() => setCurrentPage(p)}
+                        className={`w-8 h-8 rounded-md font-bold text-xs transition-colors ${
+                          p === validPage
+                            ? 'bg-blue-600 text-white shadow-xs'
+                            : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 border border-slate-200 dark:border-slate-700'
+                        }`}
+                      >
+                        {p}
+                      </button>
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+                    disabled={validPage === totalPages}
+                    className="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md font-bold text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    التالي
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </>
       )}
     </div>
