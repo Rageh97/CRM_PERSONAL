@@ -136,7 +136,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       )}
 
       {/* Main Content */}
-      <main className="flex-1 lg:ps-64 pb-20 lg:pb-0">
+      <main className="flex-1 lg:ps-64 pb-20 lg:pb-0 w-full max-w-full min-w-0 overflow-x-hidden">
         {/* Mobile Header */}
         <header className="lg:hidden sticky top-0 z-30 bg-surface/80 backdrop-blur-xl border-b border-border px-4 py-3">
           <div className="flex items-center justify-between">
@@ -166,7 +166,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </header>
 
         {/* Page Content */}
-        <div className="p-4 lg:p-6">
+        <div className="p-3 sm:p-6 w-full max-w-full min-w-0 overflow-x-hidden">
           {children}
         </div>
       </main>

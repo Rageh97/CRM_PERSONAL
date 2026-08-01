@@ -1,6 +1,9 @@
 import { prisma } from '@/lib/prisma';
 import { ReportsClient } from './client';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function ReportsPage() {
   const invoices = await prisma.invoice.findMany({
     orderBy: { date: 'desc' },

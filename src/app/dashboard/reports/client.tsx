@@ -78,7 +78,7 @@ export function ReportsClient({ invoices }: { invoices: any[] }) {
       </div>
 
       {/* Filters */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-4 shadow-xs">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md p-4 shadow-xs">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <select
             value={category}
@@ -113,18 +113,18 @@ export function ReportsClient({ invoices }: { invoices: any[] }) {
             disabled={filtered.length === 0}
             className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-md shadow-xs transition-colors disabled:opacity-50"
           >
-            🖨️ طباعة التقرير التجميعي
+            طباعة التقرير التجميعي
           </button>
         </div>
       </div>
 
       {/* Summary Stat Cards */}
       <div className="grid grid-cols-2 gap-4">
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-4 shadow-xs text-center">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md p-4 shadow-xs text-center">
           <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">عدد الفواتير المحددة</p>
           <p className="text-xl font-bold text-slate-900 dark:text-white">{filtered.length}</p>
         </div>
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-4 shadow-xs text-center">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md p-4 shadow-xs text-center">
           <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">إجمالي المبلغ في التقرير</p>
           <p className="text-xl font-black text-blue-600 dark:text-blue-400">{formatCurrency(total)}</p>
         </div>
@@ -132,7 +132,7 @@ export function ReportsClient({ invoices }: { invoices: any[] }) {
 
       {/* Clean Corporate Table */}
       {filtered.length > 0 ? (
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-xs overflow-hidden">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md shadow-xs overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-right border-collapse text-xs">
               <thead>
@@ -150,7 +150,7 @@ export function ReportsClient({ invoices }: { invoices: any[] }) {
                     <td className="p-3 font-bold font-mono text-slate-900 dark:text-white" dir="ltr text-right">
                       {inv.invoiceNumber}
                     </td>
-                    <td className="p-3 font-bold text-slate-900 dark:text-white">
+                    <td className="p-3 font-bold text-slate-900 dark:text-slate-100">
                       {inv.name}
                     </td>
                     <td className="p-3 font-semibold text-slate-700 dark:text-slate-300">
@@ -169,7 +169,7 @@ export function ReportsClient({ invoices }: { invoices: any[] }) {
           </div>
         </div>
       ) : (
-        <div className="text-center py-12 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-500 text-xs font-medium">
+        <div className="text-center py-12 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md text-slate-500 text-xs font-medium">
           لا توجد فواتير مطابقة للفترة والتصنيف المحدد
         </div>
       )}

@@ -11,7 +11,6 @@ export function ComparisonsClient({ monthlyData }: { monthlyData: any[] }) {
   const currentMonth = new Date().getMonth();
   const todayStr = new Date().toISOString().split('T')[0];
   
-  // Yesterday Date string
   const yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1);
   const yesterdayStr = yesterday.toISOString().split('T')[0];
@@ -113,7 +112,7 @@ export function ComparisonsClient({ monthlyData }: { monthlyData: any[] }) {
     loadData();
   }, [mode, day1, day2, range1Start, range1End, range2Start, range2End, month1, month2, year1, year2, monthlyData]);
 
-  // Financial Items
+  // Items
   const items = [
     {
       key: 'revenue',
@@ -122,7 +121,6 @@ export function ComparisonsClient({ monthlyData }: { monthlyData: any[] }) {
       v2: metrics2.revenue,
       change: calculatePercentageChange(metrics2.revenue, metrics1.revenue),
       isGoodWhenHigher: true,
-      color: 'emerald',
     },
     {
       key: 'expense',
@@ -131,7 +129,6 @@ export function ComparisonsClient({ monthlyData }: { monthlyData: any[] }) {
       v2: metrics2.expense,
       change: calculatePercentageChange(metrics2.expense, metrics1.expense),
       isGoodWhenHigher: false,
-      color: 'rose',
     },
     {
       key: 'returns',
@@ -140,7 +137,6 @@ export function ComparisonsClient({ monthlyData }: { monthlyData: any[] }) {
       v2: metrics2.returns,
       change: calculatePercentageChange(metrics2.returns, metrics1.returns),
       isGoodWhenHigher: false,
-      color: 'amber',
     },
     {
       key: 'salary',
@@ -149,7 +145,6 @@ export function ComparisonsClient({ monthlyData }: { monthlyData: any[] }) {
       v2: metrics2.salary,
       change: calculatePercentageChange(metrics2.salary, metrics1.salary),
       isGoodWhenHigher: false,
-      color: 'purple',
     },
     {
       key: 'netProfit',
@@ -158,7 +153,6 @@ export function ComparisonsClient({ monthlyData }: { monthlyData: any[] }) {
       v2: metrics2.netProfit,
       change: calculatePercentageChange(metrics2.netProfit, metrics1.netProfit),
       isGoodWhenHigher: true,
-      color: 'blue',
     },
   ];
 
@@ -168,64 +162,62 @@ export function ComparisonsClient({ monthlyData }: { monthlyData: any[] }) {
   return (
     <div className="space-y-6 animate-fade-in">
       
-      {/* Title */}
+      {/* Page Title */}
       <div className="border-b border-slate-200 dark:border-slate-800 pb-4">
-        <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">مركز المقارنات المالية والتحليل الذكي</h1>
+        <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">المقارنات المالية والتحليل المقارن</h1>
         <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-          قارن بين أي يومين، فترتين، شهرين أو سنتين واستعرض الأداء المالي التنفيذي
+          قارن بين أي يومين، فترتين، شهرين أو سنتين في النظام مع التحليل المالي
         </p>
       </div>
 
-      {/* Mode Selector Tabs */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-2 shadow-xs">
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+      {/* Clean Mode Selector */}
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md p-1.5 shadow-xs">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-1">
           <button
             onClick={() => setMode('DAYS')}
-            className={`py-2 px-3 text-xs font-bold rounded-md transition-all ${
+            className={`py-2 px-3 text-xs font-bold rounded transition-colors ${
               mode === 'DAYS'
-                ? 'bg-blue-600 text-white shadow-xs'
+                ? 'bg-blue-600 text-white'
                 : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
             }`}
           >
-            📅 مقارنة بالأيام (يوم/يوم)
+            مقارنة بالأيام (يوم / يوم)
           </button>
           <button
             onClick={() => setMode('RANGES')}
-            className={`py-2 px-3 text-xs font-bold rounded-md transition-all ${
+            className={`py-2 px-3 text-xs font-bold rounded transition-colors ${
               mode === 'RANGES'
-                ? 'bg-blue-600 text-white shadow-xs'
+                ? 'bg-blue-600 text-white'
                 : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
             }`}
           >
-            📆 مقارنة بنطاق فترتين
+            مقارنة بنطاق فترتين
           </button>
           <button
             onClick={() => setMode('MONTHS')}
-            className={`py-2 px-3 text-xs font-bold rounded-md transition-all ${
+            className={`py-2 px-3 text-xs font-bold rounded transition-colors ${
               mode === 'MONTHS'
-                ? 'bg-blue-600 text-white shadow-xs'
+                ? 'bg-blue-600 text-white'
                 : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
             }`}
           >
-            🗓️ مقارنة بالشهور
+            مقارنة بالشهور
           </button>
           <button
             onClick={() => setMode('YEARS')}
-            className={`py-2 px-3 text-xs font-bold rounded-md transition-all ${
+            className={`py-2 px-3 text-xs font-bold rounded transition-colors ${
               mode === 'YEARS'
-                ? 'bg-blue-600 text-white shadow-xs'
+                ? 'bg-blue-600 text-white'
                 : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
             }`}
           >
-            📈 مقارنة بالسنوات
+            مقارنة بالسنوات
           </button>
         </div>
       </div>
 
-      {/* Dynamic Controls Card */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-5 shadow-xs">
-        
-        {/* Mode 1: Days */}
+      {/* Controls Card */}
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md p-4 shadow-xs">
         {mode === 'DAYS' && (
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
@@ -234,7 +226,7 @@ export function ComparisonsClient({ monthlyData }: { monthlyData: any[] }) {
                 type="date"
                 value={day1}
                 onChange={(e) => setDay1(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-xs font-semibold text-slate-900 dark:text-white focus:outline-none focus:border-blue-600"
+                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-xs font-semibold text-slate-900 dark:text-white focus:outline-none focus:border-blue-600"
               />
             </div>
             <div>
@@ -243,16 +235,15 @@ export function ComparisonsClient({ monthlyData }: { monthlyData: any[] }) {
                 type="date"
                 value={day2}
                 onChange={(e) => setDay2(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-xs font-semibold text-slate-900 dark:text-white focus:outline-none focus:border-blue-600"
+                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-xs font-semibold text-slate-900 dark:text-white focus:outline-none focus:border-blue-600"
               />
             </div>
           </div>
         )}
 
-        {/* Mode 2: Ranges */}
         {mode === 'RANGES' && (
-          <div className="grid sm:grid-cols-2 gap-6">
-            <div className="space-y-2 bg-slate-50 dark:bg-slate-950 p-3.5 rounded-md border border-slate-200 dark:border-slate-800">
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="space-y-2 bg-slate-50 dark:bg-slate-950 p-3 rounded-md border border-slate-200 dark:border-slate-800">
               <p className="text-xs font-bold text-blue-600 dark:text-blue-400">الفترة الأولى (البداية والنهاية)</p>
               <div className="grid grid-cols-2 gap-2">
                 <div>
@@ -276,7 +267,7 @@ export function ComparisonsClient({ monthlyData }: { monthlyData: any[] }) {
               </div>
             </div>
 
-            <div className="space-y-2 bg-slate-50 dark:bg-slate-950 p-3.5 rounded-md border border-slate-200 dark:border-slate-800">
+            <div className="space-y-2 bg-slate-50 dark:bg-slate-950 p-3 rounded-md border border-slate-200 dark:border-slate-800">
               <p className="text-xs font-bold text-blue-600 dark:text-blue-400">الفترة الثانية (البداية والنهاية)</p>
               <div className="grid grid-cols-2 gap-2">
                 <div>
@@ -302,7 +293,6 @@ export function ComparisonsClient({ monthlyData }: { monthlyData: any[] }) {
           </div>
         )}
 
-        {/* Mode 3: Months */}
         {mode === 'MONTHS' && (
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
@@ -310,7 +300,7 @@ export function ComparisonsClient({ monthlyData }: { monthlyData: any[] }) {
               <select
                 value={month1}
                 onChange={(e) => setMonth1(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-xs font-semibold text-slate-900 dark:text-white focus:outline-none focus:border-blue-600"
+                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-xs font-semibold text-slate-900 dark:text-white focus:outline-none"
               >
                 {Array.from({ length: 12 }, (_, i) => (
                   <option key={i} value={String(i)}>{getArabicMonth(i)}</option>
@@ -322,7 +312,7 @@ export function ComparisonsClient({ monthlyData }: { monthlyData: any[] }) {
               <select
                 value={month2}
                 onChange={(e) => setMonth2(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-xs font-semibold text-slate-900 dark:text-white focus:outline-none focus:border-blue-600"
+                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-xs font-semibold text-slate-900 dark:text-white focus:outline-none"
               >
                 {Array.from({ length: 12 }, (_, i) => (
                   <option key={i} value={String(i)}>{getArabicMonth(i)}</option>
@@ -332,7 +322,6 @@ export function ComparisonsClient({ monthlyData }: { monthlyData: any[] }) {
           </div>
         )}
 
-        {/* Mode 4: Years */}
         {mode === 'YEARS' && (
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
@@ -343,7 +332,7 @@ export function ComparisonsClient({ monthlyData }: { monthlyData: any[] }) {
                 max="2035"
                 value={year1}
                 onChange={(e) => setYear1(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-xs font-semibold text-slate-900 dark:text-white focus:outline-none focus:border-blue-600"
+                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-xs font-semibold text-slate-900 dark:text-white focus:outline-none"
               />
             </div>
             <div>
@@ -354,75 +343,72 @@ export function ComparisonsClient({ monthlyData }: { monthlyData: any[] }) {
                 max="2035"
                 value={year2}
                 onChange={(e) => setYear2(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-xs font-semibold text-slate-900 dark:text-white focus:outline-none focus:border-blue-600"
+                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-xs font-semibold text-slate-900 dark:text-white focus:outline-none"
               />
             </div>
           </div>
         )}
       </div>
 
-      {/* Loading Overlay or Results */}
+      {/* Output Results */}
       {loading ? (
-        <div className="text-center py-12 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg">
-          <p className="text-xs font-semibold text-slate-500 animate-pulse">جاري جلب وتحليل البيانات المالية للمقارنة...</p>
+        <div className="text-center py-12 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md">
+          <p className="text-xs font-semibold text-slate-500">جاري احتساب البيانات المباشرة للمقارنة...</p>
         </div>
       ) : (
         <div className="space-y-6">
           
-          {/* Hero KPI Comparison Cards */}
+          {/* Executive KPI Cards */}
           <div className="grid sm:grid-cols-2 gap-4">
-            
-            {/* Period 1 Net Profit */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-5 shadow-xs relative overflow-hidden">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md p-5 shadow-xs">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-bold text-slate-500 dark:text-slate-400">الفترة الأولى ({label1})</span>
                 <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded text-[10px] font-bold">
                   {metrics1.count > 0 ? `${metrics1.count} فاتورة` : 'فترة أساسية'}
                 </span>
               </div>
-              <p className="text-2xl font-black text-slate-900 dark:text-white mt-1">
+              <p className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">
                 {formatCurrency(metrics1.netProfit)}
               </p>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">صافي الربح للفترة الأولى</p>
+              <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-1">صافي ربح الفترة الأولى</p>
             </div>
 
-            {/* Period 2 Net Profit & Comparison Badge */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-5 shadow-xs relative overflow-hidden">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md p-5 shadow-xs">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-bold text-slate-500 dark:text-slate-400">الفترة الثانية ({label2})</span>
                 {netProfitChange !== 0 && (
-                  <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-bold border ${
+                  <span className={`inline-block px-2.5 py-0.5 rounded text-xs font-bold border ${
                     isNetProfitPositive
-                      ? 'bg-emerald-50 text-emerald-800 border-emerald-300 dark:bg-emerald-950 dark:text-emerald-300'
-                      : 'bg-rose-50 text-rose-800 border-rose-300 dark:bg-rose-950 dark:text-rose-300'
+                      ? 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300'
+                      : 'bg-red-50 text-red-800 border-red-200 dark:bg-red-950 dark:text-red-300'
                   }`}>
-                    {isNetProfitPositive ? '↑' : '↓'} {Math.abs(netProfitChange).toFixed(1)}% {isNetProfitPositive ? 'نمو الأرباح' : 'تراجع الأرباح'}
+                    {netProfitChange > 0 ? '+' : ''}{netProfitChange.toFixed(1)}% {isNetProfitPositive ? 'نمو بالأرباح' : 'انخفاض'}
                   </span>
                 )}
               </div>
-              <p className="text-2xl font-black text-slate-900 dark:text-white mt-1">
+              <p className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">
                 {formatCurrency(metrics2.netProfit)}
               </p>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">صافي الربح للفترة المقارنة</p>
+              <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400 mt-1">صافي ربح الفترة المقارنة</p>
             </div>
           </div>
 
-          {/* Luxurious Breakdown Table with Visual Ratio Bar */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-xs overflow-hidden">
-            <div className="p-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50 flex items-center justify-between">
-              <h3 className="text-xs font-extrabold text-slate-900 dark:text-white">جدول التحليل المالي التفصيلي</h3>
-              <span className="text-[11px] text-slate-500 font-semibold">{label1} ⚡️ {label2}</span>
+          {/* Clean Data Table */}
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md shadow-xs overflow-hidden">
+            <div className="p-3.5 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50 flex items-center justify-between">
+              <h3 className="text-xs font-bold text-slate-900 dark:text-white">تفاصيل المقارنة المالية</h3>
+              <span className="text-[11px] text-slate-500 font-semibold">{label1} مقابل {label2}</span>
             </div>
 
             <div className="overflow-x-auto">
               <table className="w-full text-right border-collapse text-xs">
                 <thead>
-                  <tr className="bg-slate-100/90 dark:bg-slate-800/90 border-b-2 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 font-bold uppercase">
-                    <th className="p-3.5">البند المالي</th>
-                    <th className="p-3.5">{label1}</th>
-                    <th className="p-3.5">{label2}</th>
-                    <th className="p-3.5 text-center">نسبة التغير (%)</th>
-                    <th className="p-3.5 text-center min-w-[140px]">مؤشر النسبة البصري</th>
+                  <tr className="bg-slate-100/90 dark:bg-slate-800/90 border-b border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 font-bold uppercase">
+                    <th className="p-3">البند المالي</th>
+                    <th className="p-3">{label1}</th>
+                    <th className="p-3">{label2}</th>
+                    <th className="p-3 text-center">نسبة التغير (%)</th>
+                    <th className="p-3 text-center min-w-[120px]">المؤشر النسبة البصري</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
@@ -434,39 +420,29 @@ export function ComparisonsClient({ monthlyData }: { monthlyData: any[] }) {
 
                     return (
                       <tr key={item.key} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                        
-                        {/* Item Name */}
-                        <td className="p-3.5 font-bold text-slate-900 dark:text-white">
+                        <td className="p-3 font-bold text-slate-900 dark:text-white">
                           {item.label}
                         </td>
-
-                        {/* Period 1 Value */}
-                        <td className="p-3.5 font-bold text-slate-700 dark:text-slate-300">
+                        <td className="p-3 font-bold text-slate-700 dark:text-slate-300">
                           {formatCurrency(item.v1)}
                         </td>
-
-                        {/* Period 2 Value */}
-                        <td className="p-3.5 font-bold text-slate-900 dark:text-white">
+                        <td className="p-3 font-bold text-slate-900 dark:text-white">
                           {formatCurrency(item.v2)}
                         </td>
-
-                        {/* Percentage Change */}
-                        <td className="p-3.5 text-center">
+                        <td className="p-3 text-center">
                           {item.v1 === 0 && item.v2 === 0 ? (
                             <span className="text-slate-400 font-semibold">—</span>
                           ) : (
-                            <span className={`inline-block px-2.5 py-0.5 rounded font-extrabold text-[11px] border ${
+                            <span className={`inline-block px-2 py-0.5 rounded font-bold text-[11px] border ${
                               isPositiveChange
-                                ? 'bg-emerald-50 text-emerald-800 border-emerald-300 dark:bg-emerald-950 dark:text-emerald-300'
-                                : 'bg-rose-50 text-rose-800 border-rose-300 dark:bg-rose-950 dark:text-rose-300'
+                                ? 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300'
+                                : 'bg-red-50 text-red-800 border-red-200 dark:bg-red-950 dark:text-red-300'
                             }`}>
                               {item.change > 0 ? '+' : ''}{item.change.toFixed(1)}%
                             </span>
                           )}
                         </td>
-
-                        {/* Visual Progress Bar */}
-                        <td className="p-3.5">
+                        <td className="p-3">
                           <div className="space-y-1">
                             <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
                               <div className="bg-slate-400 dark:bg-slate-500 h-full rounded-full" style={{ width: `${pct1}%` }} />
@@ -476,7 +452,6 @@ export function ComparisonsClient({ monthlyData }: { monthlyData: any[] }) {
                             </div>
                           </div>
                         </td>
-
                       </tr>
                     );
                   })}
@@ -485,19 +460,19 @@ export function ComparisonsClient({ monthlyData }: { monthlyData: any[] }) {
             </div>
           </div>
 
-          {/* AI Executive Analysis Report */}
-          <div className="bg-slate-900 text-white rounded-lg p-5 border border-slate-800 space-y-2 shadow-sm">
-            <h3 className="text-xs font-bold text-indigo-400 uppercase tracking-wider flex items-center gap-2">
-              📊 التقرير المالي التنفيذي المقارن
+          {/* Clean Executive Summary Box */}
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md p-4 space-y-2 shadow-xs">
+            <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase">
+              التقرير المالي المقارن
             </h3>
-            <div className="text-xs text-slate-300 leading-relaxed space-y-1.5 pt-1">
+            <div className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed space-y-1">
               <p>
-                • عند مقارنة <strong className="text-white">{label2}</strong> مع <strong className="text-white">{label1}</strong>، يظهر أن إجمالي الإيرادات سجلت {metrics2.revenue >= metrics1.revenue ? 'زيادة' : 'انخفاضاً'} قدره {formatCurrency(Math.abs(metrics2.revenue - metrics1.revenue))}.
+                • عند مقارنة <strong className="text-slate-900 dark:text-white">{label2}</strong> مع <strong className="text-slate-900 dark:text-white">{label1}</strong>، يظهر أن إجمالي الإيرادات سجلت {metrics2.revenue >= metrics1.revenue ? 'زيادة' : 'انخفاضاً'} قدره {formatCurrency(Math.abs(metrics2.revenue - metrics1.revenue))}.
               </p>
               <p>
                 • إجمالي النفقات التراكمية (شاملة الرواتب والمسترجعات) شهدت {metrics2.expense + metrics2.returns + metrics2.salary >= metrics1.expense + metrics1.returns + metrics1.salary ? 'ارتفاعاً' : 'انخفاضاً'} بنسبة {Math.abs(calculatePercentageChange(metrics2.expense + metrics2.returns + metrics2.salary, metrics1.expense + metrics1.returns + metrics1.salary)).toFixed(1)}%.
               </p>
-              <p className="font-bold text-emerald-400">
+              <p className="font-bold text-blue-700 dark:text-blue-400 pt-1">
                 • النتيجة النهائية: صافي الربح في {label2} بلغ {formatCurrency(metrics2.netProfit)} بالمقارنة مع {formatCurrency(metrics1.netProfit)} في {label1}.
               </p>
             </div>

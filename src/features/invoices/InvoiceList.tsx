@@ -107,10 +107,10 @@ export function InvoiceList({ invoices, userRole, userPermissions = [] }: Invoic
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 w-full max-w-full min-w-0">
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1">
+      <div className="flex flex-col sm:flex-row gap-3 w-full">
+        <div className="relative flex-1 w-full">
           <input
             type="text"
             value={search}
@@ -122,7 +122,7 @@ export function InvoiceList({ invoices, userRole, userPermissions = [] }: Invoic
         <select
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value)}
-          className="px-3.5 py-2.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-md text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none transition-colors"
+          className="w-full sm:w-auto px-3.5 py-2.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-md text-xs font-semibold text-slate-800 dark:text-slate-200 focus:outline-none transition-colors"
         >
           <option value="">كل التصنيفات</option>
           {Object.entries(CATEGORY_LABELS).map(([k, v]) => (
@@ -131,101 +131,157 @@ export function InvoiceList({ invoices, userRole, userPermissions = [] }: Invoic
         </select>
       </div>
 
-      {/* Corporate Structured Table */}
       {filtered.length === 0 ? (
         <div className="text-center py-12 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-500 text-xs font-medium">
           لا توجد فواتير مطابقة
         </div>
       ) : (
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-right border-collapse text-xs">
-              <thead>
-                <tr className="bg-slate-100 dark:bg-slate-800/90 border-b-2 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 font-bold uppercase">
-                  <th className="p-3.5">رقم الفاتورة</th>
-                  <th className="p-3.5">اسم الفاتورة</th>
-                  <th className="p-3.5">التصنيف</th>
-                  <th className="p-3.5">المبلغ</th>
-                  <th className="p-3.5">التاريخ</th>
-                  <th className="p-3.5 text-center">الإجراءات</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
-                {filtered.map((inv) => (
-                  <tr key={inv.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                    
-                    {/* Invoice Number */}
-                    <td className="p-3.5 font-bold font-mono text-slate-900 dark:text-white" dir="ltr text-right">
+        <>
+          {/* Mobile Card List View (hidden on md and larger) */}
+          <div className="md:hidden space-y-3 w-full max-w-full min-w-0">
+            {filtered.map((inv) => (
+              <div
+                key={inv.id}
+                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-3.5 shadow-xs space-y-2.5"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <span className="text-[10px] font-bold font-mono text-slate-400 block" dir="ltr text-right">
                       {inv.invoiceNumber}
-                    </td>
+                    </span>
+                    <h3 className="text-xs font-bold text-slate-900 dark:text-white mt-0.5">{inv.name}</h3>
+                  </div>
+                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${categoryBadge[inv.category]}`}>
+                    {CATEGORY_LABELS[inv.category]}
+                  </span>
+                </div>
 
-                    {/* Name & Creator */}
-                    <td className="p-3.5">
-                      <p className="font-bold text-slate-900 dark:text-white">{inv.name}</p>
-                      {inv.createdBy && <p className="text-[11px] text-slate-500 font-medium">{inv.createdBy.name}</p>}
-                    </td>
+                <div className="flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-2 text-xs">
+                  <span className="text-slate-500 dark:text-slate-400 font-medium text-[11px]">
+                    {formatShortDate(inv.date)}
+                  </span>
+                  <span className={`font-extrabold ${
+                    inv.category === 'REVENUE' ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
+                  }`}>
+                    {inv.category === 'REVENUE' ? '+' : '-'}{formatCurrency(inv.amount, inv.currency)}
+                  </span>
+                </div>
 
-                    {/* Category Badge */}
-                    <td className="p-3.5">
-                      <span className={`inline-block px-2.5 py-1 rounded-md text-[11px] font-bold border ${categoryBadge[inv.category]}`}>
-                        {CATEGORY_LABELS[inv.category]}
-                      </span>
-                    </td>
-
-                    {/* Amount */}
-                    <td className="p-3.5">
-                      <p className={`font-extrabold text-sm ${
-                        inv.category === 'REVENUE' ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
-                      }`}>
-                        {inv.category === 'REVENUE' ? '+' : '-'}{formatCurrency(inv.amount, inv.currency)}
-                      </p>
-                    </td>
-
-                    {/* Date */}
-                    <td className="p-3.5 text-slate-600 dark:text-slate-400 font-semibold text-[11px]">
-                      {formatShortDate(inv.date)}
-                    </td>
-
-                    {/* Action Buttons */}
-                    <td className="p-3.5 text-center">
-                      <div className="flex items-center justify-center gap-1.5">
-                        <Link
-                          href={`/dashboard/invoices/${inv.id}`}
-                          className="px-2.5 py-1 text-xs font-bold text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-md border border-slate-300 dark:border-slate-700 transition-colors"
-                        >
-                          عرض
-                        </Link>
-                        {canEdit && (
-                          <Link
-                            href={`/dashboard/invoices/${inv.id}/edit`}
-                            className="px-2.5 py-1 text-xs font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/80 rounded-md border border-indigo-200 dark:border-indigo-800 transition-colors"
-                          >
-                            تعديل
-                          </Link>
-                        )}
-                        <button
-                          onClick={() => handlePrint(inv)}
-                          className="px-2.5 py-1 text-xs font-bold text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-md border border-slate-300 dark:border-slate-700 transition-colors"
-                        >
-                          طباعة
-                        </button>
-                        {canDelete && (
-                          <button
-                            onClick={() => handleDelete(inv.id)}
-                            disabled={deleting === inv.id}
-                            className="px-2.5 py-1 text-xs font-bold text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950/60 hover:bg-red-100 dark:hover:bg-red-900/80 rounded-md border border-red-200 dark:border-red-800 transition-colors disabled:opacity-50"
-                          >
-                            {deleting === inv.id ? '...' : 'حذف'}
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                {/* Actions Row on Mobile */}
+                <div className="flex items-center gap-1.5 pt-2 border-t border-slate-100 dark:border-slate-800">
+                  <Link
+                    href={`/dashboard/invoices/${inv.id}`}
+                    className="flex-1 text-center py-1.5 text-xs font-bold text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 rounded border border-slate-300 dark:border-slate-700"
+                  >
+                    عرض
+                  </Link>
+                  {canEdit && (
+                    <Link
+                      href={`/dashboard/invoices/${inv.id}/edit`}
+                      className="flex-1 text-center py-1.5 text-xs font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950 rounded border border-indigo-200 dark:border-indigo-800"
+                    >
+                      تعديل
+                    </Link>
+                  )}
+                  <button
+                    onClick={() => handlePrint(inv)}
+                    className="flex-1 text-center py-1.5 text-xs font-bold text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 rounded border border-slate-300 dark:border-slate-700"
+                  >
+                    طباعة
+                  </button>
+                  {canDelete && (
+                    <button
+                      onClick={() => handleDelete(inv.id)}
+                      disabled={deleting === inv.id}
+                      className="px-3 py-1.5 text-xs font-bold text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950 rounded border border-red-200 dark:border-red-800"
+                    >
+                      حذف
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
+
+          {/* Desktop Table View (hidden on mobile, visible on md and larger) */}
+          <div className="hidden md:block bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-xs overflow-hidden w-full max-w-full min-w-0">
+            <div className="w-full overflow-x-auto">
+              <table className="w-full text-right border-collapse text-xs">
+                <thead>
+                  <tr className="bg-slate-100/90 dark:bg-slate-800/90 border-b-2 border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100 font-bold uppercase">
+                    <th className="p-3.5">رقم الفاتورة</th>
+                    <th className="p-3.5">اسم الفاتورة</th>
+                    <th className="p-3.5">التصنيف</th>
+                    <th className="p-3.5">المبلغ</th>
+                    <th className="p-3.5">التاريخ</th>
+                    <th className="p-3.5 text-center">الإجراءات</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
+                  {filtered.map((inv) => (
+                    <tr key={inv.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                      <td className="p-3.5 font-bold font-mono text-slate-900 dark:text-white" dir="ltr text-right">
+                        {inv.invoiceNumber}
+                      </td>
+                      <td className="p-3.5">
+                        <p className="font-bold text-slate-900 dark:text-white">{inv.name}</p>
+                        {inv.createdBy && <p className="text-[11px] text-slate-500 font-medium">{inv.createdBy.name}</p>}
+                      </td>
+                      <td className="p-3.5">
+                        <span className={`inline-block px-2.5 py-1 rounded-md text-[11px] font-bold border ${categoryBadge[inv.category]}`}>
+                          {CATEGORY_LABELS[inv.category]}
+                        </span>
+                      </td>
+                      <td className="p-3.5">
+                        <p className={`font-extrabold text-sm ${
+                          inv.category === 'REVENUE' ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
+                        }`}>
+                          {inv.category === 'REVENUE' ? '+' : '-'}{formatCurrency(inv.amount, inv.currency)}
+                        </p>
+                      </td>
+                      <td className="p-3.5 text-slate-600 dark:text-slate-400 font-semibold text-[11px]">
+                        {formatShortDate(inv.date)}
+                      </td>
+                      <td className="p-3.5 text-center">
+                        <div className="flex items-center justify-center gap-1.5">
+                          <Link
+                            href={`/dashboard/invoices/${inv.id}`}
+                            className="px-2.5 py-1 text-xs font-bold text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-md border border-slate-300 dark:border-slate-700 transition-colors"
+                          >
+                            عرض
+                          </Link>
+                          {canEdit && (
+                            <Link
+                              href={`/dashboard/invoices/${inv.id}/edit`}
+                              className="px-2.5 py-1 text-xs font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/60 hover:bg-indigo-100 dark:hover:bg-indigo-900/80 rounded-md border border-indigo-200 dark:border-indigo-800 transition-colors"
+                            >
+                              تعديل
+                            </Link>
+                          )}
+                          <button
+                            onClick={() => handlePrint(inv)}
+                            className="px-2.5 py-1 text-xs font-bold text-slate-800 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-md border border-slate-300 dark:border-slate-700 transition-colors"
+                          >
+                            طباعة
+                          </button>
+                          {canDelete && (
+                            <button
+                              onClick={() => handleDelete(inv.id)}
+                              disabled={deleting === inv.id}
+                              className="px-2.5 py-1 text-xs font-bold text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950/60 hover:bg-red-100 dark:hover:bg-red-900/80 rounded-md border border-red-200 dark:border-red-800 transition-colors disabled:opacity-50"
+                            >
+                              {deleting === inv.id ? '...' : 'حذف'}
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
       )}
     </div>
   );
