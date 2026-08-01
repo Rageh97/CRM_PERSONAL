@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ALL_PERMISSIONS, type PermissionItem } from '@/lib/types';
+import { ALL_PERMISSIONS } from '@/lib/types';
 
 export function UsersClient({ users }: { users: any[] }) {
   const router = useRouter();
@@ -90,7 +90,7 @@ export function UsersClient({ users }: { users: any[] }) {
     setForm({
       name: user.name,
       email: user.email,
-      password: '', // leave empty unless updating password
+      password: '',
       role: user.role,
       permissions: perms,
     });
@@ -112,15 +112,15 @@ export function UsersClient({ users }: { users: any[] }) {
     }
   };
 
-  // Group permissions by category
   const categories = ['الفواتير', 'الموظفين', 'التقارير والإعدادات'] as const;
 
   return (
-    <div className="space-y-5 animate-fade-in">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6 animate-fade-in">
+      {/* Page Title & Add Button */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-4">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-text-primary">إدارة المستخدمين والصلاحيات</h1>
-          <p className="text-sm text-text-muted mt-1">تحديد ودعم صلاحيات الموظفين بدقة</p>
+          <p className="text-xs text-text-muted mt-1">تخصيص وإدارة صلاحيات الموظفين بحرفية ودقة</p>
         </div>
         <button
           onClick={() => {
@@ -139,45 +139,46 @@ export function UsersClient({ users }: { users: any[] }) {
               setShowForm(true);
             }
           }}
-          className="px-4 py-2.5 bg-gradient-to-l from-primary to-primary-dark text-white text-sm font-semibold rounded-xl hover:shadow-lg transition-all"
+          className="px-4 py-2.5 bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 text-xs font-semibold rounded-md shadow-sm transition-colors self-start sm:self-auto"
         >
-          {showForm ? 'إلغاء' : '+ موظف / مستخدم جديد'}
+          {showForm ? 'إلغاء' : '+ إضافة موظف / مستخدم جديد'}
         </button>
       </div>
 
-      {/* Form with Checkboxes */}
+      {/* Form Drawer / Card */}
       {showForm && (
-        <form onSubmit={handleCreateOrUpdate} className="bg-surface rounded-2xl border border-border p-5 sm:p-6 shadow-card space-y-6 animate-slide-up">
-          <h2 className="text-base font-bold text-text-primary border-b border-border pb-3">
-            {editingId ? 'تعديل صلاحيات المستخدم' : 'إضافة موظف / مستخدم جديد'}
+        <form onSubmit={handleCreateOrUpdate} className="bg-surface border border-border rounded-lg p-5 sm:p-6 shadow-sm space-y-5 animate-slide-up">
+          <h2 className="text-sm font-bold text-text-primary border-b border-border pb-2.5">
+            {editingId ? 'تعديل بيانات وصلاحيات المستخدم' : 'إضافة مستخدم جديد وتحديد الصلاحيات'}
           </h2>
 
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-text-secondary mb-1">الاسم الكامل <span className="text-danger">*</span></label>
+              <label className="block text-xs font-semibold text-text-secondary mb-1">الاسم الكامل <span className="text-danger">*</span></label>
               <input
                 type="text"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 required
                 placeholder="اسم الموظف"
-                className="w-full px-4 py-2.5 bg-surface-secondary border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
+                className="w-full px-3.5 py-2 bg-surface-secondary border border-border rounded-md text-xs text-text-primary focus:outline-none focus:border-primary transition-all"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-text-secondary mb-1">البريد الإلكتروني <span className="text-danger">*</span></label>
+              <label className="block text-xs font-semibold text-text-secondary mb-1">البريد الإلكتروني <span className="text-danger">*</span></label>
               <input
                 type="email"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                 required
                 placeholder="email@company.com"
-                className="w-full px-4 py-2.5 bg-surface-secondary border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
+                dir="ltr"
+                className="w-full px-3.5 py-2 bg-surface-secondary border border-border rounded-md text-xs text-text-primary focus:outline-none focus:border-primary transition-all text-left"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-text-secondary mb-1">
-                كلمة المرور {editingId && <span className="text-text-muted">(اتركها فارغة إذا لم تُرِد التغيير)</span>} {!editingId && <span className="text-danger">*</span>}
+              <label className="block text-xs font-semibold text-text-secondary mb-1">
+                كلمة المرور {editingId && <span className="text-text-muted font-normal">(اختياري)</span>} {!editingId && <span className="text-danger">*</span>}
               </label>
               <input
                 type="password"
@@ -186,75 +187,76 @@ export function UsersClient({ users }: { users: any[] }) {
                 required={!editingId}
                 minLength={6}
                 placeholder="••••••••"
-                className="w-full px-4 py-2.5 bg-surface-secondary border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
+                dir="ltr"
+                className="w-full px-3.5 py-2 bg-surface-secondary border border-border rounded-md text-xs text-text-primary focus:outline-none focus:border-primary transition-all text-left"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-text-secondary mb-1">نوع الحساب</label>
+              <label className="block text-xs font-semibold text-text-secondary mb-1">نوع الحساب</label>
               <select
                 value={form.role}
                 onChange={(e) => setForm({ ...form, role: e.target.value })}
-                className="w-full px-4 py-2.5 bg-surface-secondary border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
+                className="w-full px-3.5 py-2 bg-surface-secondary border border-border rounded-md text-xs text-text-primary focus:outline-none focus:border-primary transition-all"
               >
-                <option value="EMPLOYEE">موظف (تحديد صلاحيات مخصصة)</option>
+                <option value="EMPLOYEE">موظف (تخصيص صلاحيات محددة)</option>
                 <option value="SUPER_ADMIN">سوبر أدمن (صلاحيات كاملة تلقائياً)</option>
               </select>
             </div>
           </div>
 
-          {/* Granular Permission Checkboxes */}
+          {/* Dynamic Checkboxes */}
           {form.role === 'EMPLOYEE' && (
-            <div className="space-y-4 pt-2 border-t border-border">
+            <div className="space-y-4 pt-3 border-t border-border">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-sm font-bold text-text-primary">تحديد الصلاحيات المسموحة للموظف</h3>
-                  <p className="text-xs text-text-muted">قم بتحديد المزايا والوظائف التي يُسمح للموظف بالوصول إليها</p>
+                  <h3 className="text-xs font-bold text-text-primary">مصفوفة الصلاحيات المتاحة للموظف:</h3>
+                  <p className="text-[11px] text-text-muted">اختر الصلاحيات المسموح بها للموظف فقط</p>
                 </div>
                 <div className="flex gap-2">
                   <button
                     type="button"
                     onClick={selectAllPermissions}
-                    className="px-3 py-1 text-xs bg-primary/10 text-primary rounded-lg font-medium hover:bg-primary/20 transition-colors"
+                    className="px-2.5 py-1 text-[11px] bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded font-medium hover:bg-slate-200 transition-colors"
                   >
                     تحديد الكل
                   </button>
                   <button
                     type="button"
                     onClick={clearAllPermissions}
-                    className="px-3 py-1 text-xs bg-surface-secondary text-text-muted rounded-lg font-medium hover:bg-surface-hover transition-colors"
+                    className="px-2.5 py-1 text-[11px] bg-slate-100 dark:bg-slate-800 text-slate-500 rounded font-medium hover:bg-slate-200 transition-colors"
                   >
                     إلغاء الكل
                   </button>
                 </div>
               </div>
 
-              <div className="space-y-4">
+              <div className="grid sm:grid-cols-3 gap-3">
                 {categories.map((cat) => {
                   const catPerms = ALL_PERMISSIONS.filter((p) => p.category === cat);
                   return (
-                    <div key={cat} className="bg-surface-secondary/60 rounded-xl p-3 border border-border-light">
-                      <h4 className="text-xs font-bold text-primary mb-2.5">{cat}</h4>
-                      <div className="grid sm:grid-cols-2 gap-2.5">
+                    <div key={cat} className="bg-surface-secondary/70 rounded-md p-3 border border-border">
+                      <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200 mb-2 border-b border-border pb-1">{cat}</h4>
+                      <div className="space-y-2">
                         {catPerms.map((perm) => {
                           const checked = form.permissions.includes(perm.id);
                           return (
                             <label
                               key={perm.id}
-                              className={`flex items-start gap-3 p-2.5 rounded-xl border transition-all cursor-pointer ${
+                              className={`flex items-start gap-2.5 p-2 rounded border transition-all cursor-pointer ${
                                 checked
-                                  ? 'bg-surface border-primary/40 shadow-sm'
-                                  : 'bg-surface/50 border-border/50 hover:bg-surface'
+                                  ? 'bg-white dark:bg-slate-900 border-slate-400 dark:border-slate-600'
+                                  : 'bg-transparent border-transparent opacity-75 hover:opacity-100'
                               }`}
                             >
                               <input
                                 type="checkbox"
                                 checked={checked}
                                 onChange={() => togglePermission(perm.id)}
-                                className="mt-1 w-4 h-4 rounded text-primary border-border focus:ring-primary/30"
+                                className="mt-0.5 w-3.5 h-3.5 rounded text-slate-900 border-slate-300 focus:ring-slate-900"
                               />
                               <div>
-                                <p className="text-xs font-semibold text-text-primary">{perm.label}</p>
-                                <p className="text-[11px] text-text-muted mt-0.5">{perm.desc}</p>
+                                <p className="text-xs font-semibold text-text-primary leading-tight">{perm.label}</p>
+                                <p className="text-[10px] text-text-muted mt-0.5 leading-tight">{perm.desc}</p>
                               </div>
                             </label>
                           );
@@ -267,14 +269,14 @@ export function UsersClient({ users }: { users: any[] }) {
             </div>
           )}
 
-          {/* Submit */}
-          <div className="flex gap-3 pt-2">
+          {/* Actions */}
+          <div className="flex gap-2 pt-2">
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 py-3 px-4 bg-gradient-to-l from-primary to-primary-dark text-white font-semibold rounded-xl hover:shadow-lg transition-all disabled:opacity-60"
+              className="flex-1 py-2.5 px-4 bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 text-xs font-semibold rounded-md transition-colors disabled:opacity-50"
             >
-              {loading ? 'جاري الحفظ...' : editingId ? 'حفظ التعديلات' : 'إضافة وتخصيص الصلاحيات'}
+              {loading ? 'جاري الحفظ...' : editingId ? 'تحديث الصلاحيات' : 'إضافة الموظف والصلاحيات'}
             </button>
             <button
               type="button"
@@ -282,7 +284,7 @@ export function UsersClient({ users }: { users: any[] }) {
                 setShowForm(false);
                 setEditingId(null);
               }}
-              className="px-6 py-3 bg-surface-secondary border border-border text-text-secondary font-medium rounded-xl hover:bg-surface-hover transition-all"
+              className="px-4 py-2.5 bg-surface-secondary border border-border text-text-secondary text-xs font-semibold rounded-md hover:bg-surface-hover transition-colors"
             >
               إلغاء
             </button>
@@ -290,87 +292,107 @@ export function UsersClient({ users }: { users: any[] }) {
         </form>
       )}
 
-      {/* User Cards */}
-      <div className="space-y-3 stagger-children">
-        {users.map((user) => {
-          let userPerms: string[] = [];
-          try {
-            userPerms = typeof user.permissions === 'string' ? JSON.parse(user.permissions) : user.permissions || [];
-          } catch {
-            userPerms = [];
-          }
+      {/* Structured Clean Corporate Data Table */}
+      <div className="bg-surface border border-border rounded-lg shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-right border-collapse text-xs">
+            <thead>
+              <tr className="bg-slate-100 dark:bg-slate-800/80 border-b border-border text-slate-700 dark:text-slate-300 font-bold">
+                <th className="p-3.5">المستخدم / البريد</th>
+                <th className="p-3.5">نوع الحساب</th>
+                <th className="p-3.5">الصلاحيات المخصصة</th>
+                <th className="p-3.5 text-center">الإجراءات</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {users.map((user) => {
+                let userPerms: string[] = [];
+                try {
+                  userPerms = typeof user.permissions === 'string' ? JSON.parse(user.permissions) : user.permissions || [];
+                } catch {
+                  userPerms = [];
+                }
+                const isSuper = user.role === 'SUPER_ADMIN';
 
-          const isSuper = user.role === 'SUPER_ADMIN';
+                return (
+                  <tr key={user.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors">
+                    
+                    {/* Name & Email */}
+                    <td className="p-3.5">
+                      <div className="flex items-center gap-2.5">
+                        <div className={`w-8 h-8 rounded-md flex items-center justify-center font-bold text-xs ${
+                          isSuper ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900' : 'bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200'
+                        }`}>
+                          {user.name.charAt(0)}
+                        </div>
+                        <div>
+                          <p className="font-bold text-slate-900 dark:text-white">{user.name}</p>
+                          <p className="text-[11px] text-slate-500 font-mono" dir="ltr">{user.email}</p>
+                        </div>
+                      </div>
+                    </td>
 
-          return (
-            <div
-              key={user.id}
-              className="bg-surface border border-border rounded-2xl p-4 sm:p-5 hover:shadow-md transition-all duration-200"
-            >
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
-                <div className="flex items-center gap-3">
-                  <div className={`w-11 h-11 rounded-2xl flex items-center justify-center font-bold text-sm ${
-                    isSuper ? 'bg-primary-50 text-primary' : 'bg-salary-bg text-salary'
-                  }`}>
-                    {user.name.charAt(0)}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-sm font-bold text-text-primary">{user.name}</h3>
-                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold ${
-                        isSuper ? 'bg-primary-50 text-primary' : 'bg-success-bg text-success'
+                    {/* Role Badge */}
+                    <td className="p-3.5">
+                      <span className={`inline-block px-2.5 py-1 rounded text-[11px] font-semibold border ${
+                        isSuper
+                          ? 'bg-slate-900 text-white border-slate-900 dark:bg-slate-100 dark:text-slate-900 dark:border-slate-100'
+                          : 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800'
                       }`}>
-                        {isSuper ? 'سوبر أدمن' : 'موظف'}
+                        {isSuper ? 'سوبر أدمن' : 'موظف مخصص'}
                       </span>
-                    </div>
-                    <p className="text-xs text-text-muted mt-0.5">{user.email}</p>
-                  </div>
-                </div>
+                    </td>
 
-                {!isSuper && (
-                  <div className="flex items-center gap-2 self-end sm:self-auto">
-                    <button
-                      onClick={() => startEdit(user)}
-                      className="px-3 py-1.5 text-xs font-medium text-primary bg-primary-50 rounded-lg hover:bg-primary-100 transition-colors"
-                    >
-                      تعديل الصلاحيات
-                    </button>
-                    <button
-                      onClick={() => handleDelete(user.id)}
-                      className="px-3 py-1.5 text-xs font-medium text-danger bg-danger-bg rounded-lg hover:bg-danger/10 transition-colors"
-                    >
-                      حذف
-                    </button>
-                  </div>
-                )}
-              </div>
+                    {/* Assigned Permissions Badges */}
+                    <td className="p-3.5">
+                      {isSuper ? (
+                        <span className="text-[11px] font-semibold text-slate-500">كامل صلاحيات النظام (Super Admin)</span>
+                      ) : userPerms.length === 0 ? (
+                        <span className="text-[11px] text-slate-400 italic">بدون صلاحيات</span>
+                      ) : (
+                        <div className="flex flex-wrap gap-1">
+                          {userPerms.map((pId) => {
+                            const pObj = ALL_PERMISSIONS.find((p) => p.id === pId);
+                            return (
+                              <span
+                                key={pId}
+                                className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-[10px] font-medium text-slate-700 dark:text-slate-300"
+                              >
+                                {pObj?.label || pId}
+                              </span>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </td>
 
-              {/* Permissions list badges for employee */}
-              {!isSuper && (
-                <div className="pt-3 border-t border-border-light">
-                  <p className="text-[11px] font-medium text-text-muted mb-2">الصلاحيات الممنوحة:</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {userPerms.length === 0 ? (
-                      <span className="text-xs text-text-muted italic">لا توجد صلاحيات مخصصة</span>
-                    ) : (
-                      userPerms.map((permId) => {
-                        const perm = ALL_PERMISSIONS.find((p) => p.id === permId);
-                        return (
-                          <span
-                            key={permId}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 bg-surface-secondary text-text-secondary border border-border-light rounded-lg text-xs font-medium"
+                    {/* Actions */}
+                    <td className="p-3.5 text-center">
+                      {!isSuper ? (
+                        <div className="flex items-center justify-center gap-2">
+                          <button
+                            onClick={() => startEdit(user)}
+                            className="px-2.5 py-1 text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded border border-slate-300 dark:border-slate-700 transition-colors"
                           >
-                            ✓ {perm?.label || permId}
-                          </span>
-                        );
-                      })
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-          );
-        })}
+                            تعديل الصلاحيات
+                          </button>
+                          <button
+                            onClick={() => handleDelete(user.id)}
+                            className="px-2.5 py-1 text-xs font-semibold text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-950/40 hover:bg-red-100 rounded border border-red-200 dark:border-red-900 transition-colors"
+                          >
+                            حذف
+                          </button>
+                        </div>
+                      ) : (
+                        <span className="text-[11px] text-slate-400 italic">—</span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
