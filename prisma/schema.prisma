@@ -1,0 +1,108 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ═══════════════════════════════════════
+// MODELS
+// ═══════════════════════════════════════
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role        String   @default("EMPLOYEE") // SUPER_ADMIN, EMPLOYEE
+  permissions String   @default("[]") // JSON string of permission IDs
+  avatar      String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  invoices   Invoice[]
+  activities ActivityLog[]
+
+  @@map("users")
+}
+
+model Invoice {
+  id            String   @id @default(uuid())
+  invoiceNumber String   @unique
+  name          String
+  description   String?
+  amount        Float    @default(0)
+  currency      String   @default("SAR") // SAR, USD
+  category      String   // REVENUE, EXPENSE, RETURN, SALARY
+  date          DateTime
+  attachment    String?
+
+  createdById String
+  createdBy   User   @relation(fields: [createdById], references: [id])
+
+  employeeId String?
+  employee   Employee? @relation(fields: [employeeId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category])
+  @@index([date])
+  @@index([createdById])
+  @@index([invoiceNumber])
+  @@index([employeeId])
+  @@map("invoices")
+}
+
+model Employee {
+  id        String   @id @default(uuid())
+  name      String
+  email     String?
+  phone     String?
+  position  String
+  salary    Float    @default(0)
+  currency  String   @default("SAR")
+  isActive  Boolean  @default(true)
+  hireDate  DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  invoices Invoice[]
+
+  @@map("employees")
+}
+
+model SystemSettings {
+  id              String   @id @default("default")
+  companyName     String   @default("شركتي")
+  companyLogo     String?
+  primaryColor    String   @default("#6366f1")
+  secondaryColor  String   @default("#8b5cf6")
+  contactEmail    String?
+  contactPhone    String?
+  contactAddress  String?
+  defaultCurrency String   @default("SAR")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("system_settings")
+}
+
+model ActivityLog {
+  id         String   @id @default(uuid())
+  action     String   // CREATE, UPDATE, DELETE, LOGIN, LOGOUT, PRINT, EXPORT
+  entityType String   // Invoice, Employee, User, Settings
+  entityId   String?
+  details    String?
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@index([entityType])
+  @@index([createdAt])
+  @@map("activity_logs")
+}
