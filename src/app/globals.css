@@ -5,6 +5,9 @@
    منصة خالد الشهراني — Corporate SaaS Design System (Cairo Font)
    ═══════════════════════════════════════════════════ */
 
+/* Configure Tailwind v4 to use class-based dark mode ONLY when .dark class is on <html> */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --bg-primary: #f8fafc;
   --bg-surface: #ffffff;
