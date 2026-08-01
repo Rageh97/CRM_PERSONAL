@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { formatCurrency, CATEGORY_LABELS, formatShortDate, CURRENCY_LABELS } from '@/lib/utils';
+import { formatCurrency, CATEGORY_LABELS, formatShortDate } from '@/lib/utils';
 
 export function ReportsClient({ invoices }: { invoices: any[] }) {
   const [category, setCategory] = useState('');
@@ -39,23 +39,23 @@ export function ReportsClient({ invoices }: { invoices: any[] }) {
         <meta charset="UTF-8">
         <title>تقرير الفواتير</title>
         <style>
-          @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap');
+          @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
           * { margin: 0; padding: 0; box-sizing: border-box; }
-          body { font-family: 'IBM Plex Sans Arabic', sans-serif; padding: 40px; color: #0f172a; }
-          .header { border-bottom: 3px solid #6366f1; padding-bottom: 20px; margin-bottom: 30px; }
-          .logo { font-size: 24px; font-weight: 700; color: #6366f1; }
-          .sub { font-size: 12px; color: #64748b; margin-top: 4px; }
+          body { font-family: 'Cairo', sans-serif; padding: 40px; color: #0f172a; }
+          .header { border-bottom: 2px solid #0f172a; padding-bottom: 20px; margin-bottom: 30px; }
+          .logo { font-size: 22px; font-weight: 800; color: #0f172a; }
+          .sub { font-size: 12px; color: #475569; margin-top: 4px; }
           table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-          th { text-align: right; padding: 10px; background: #f8fafc; border: 1px solid #e2e8f0; font-weight: 600; font-size: 12px; }
+          th { text-align: right; padding: 10px; background: #f8fafc; border: 1px solid #e2e8f0; font-weight: 700; font-size: 12px; }
           td { padding: 10px; border: 1px solid #e2e8f0; font-size: 12px; }
-          .total { text-align: left; margin-top: 20px; font-size: 18px; font-weight: 700; color: #6366f1; }
-          .footer { margin-top: 40px; text-align: center; font-size: 11px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 20px; }
+          .total { text-align: left; margin-top: 20px; font-size: 18px; font-weight: 800; color: #0f172a; }
+          .footer { margin-top: 40px; text-align: center; font-size: 11px; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 20px; }
         </style>
       </head>
       <body>
         <div class="header">
           <div class="logo">الإدارة المالية — خالد الشهراني</div>
-          <div class="sub">تقرير الفواتير — ${filtered.length} فاتورة</div>
+          <div class="sub">تقرير الفواتير — ${filtered.length} فاتورة (شهر ${month} / ${year})</div>
         </div>
         <table>
           <thead><tr><th>رقم الفاتورة</th><th>الاسم</th><th>التصنيف</th><th>المبلغ</th><th>التاريخ</th></tr></thead>
@@ -71,65 +71,107 @@ export function ReportsClient({ invoices }: { invoices: any[] }) {
   };
 
   return (
-    <div className="space-y-5 animate-fade-in">
-      <div>
-        <h1 className="text-xl sm:text-2xl font-bold text-text-primary">التقارير</h1>
-        <p className="text-sm text-text-muted mt-1">طباعة وتصدير الفواتير</p>
+    <div className="space-y-6 animate-fade-in">
+      <div className="border-b border-slate-200 dark:border-slate-800 pb-4">
+        <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">التقارير المالية والطباعة</h1>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">فلترة وتجميع الفواتير وتصدير تقارير رسمية بهوية الشركة</p>
       </div>
 
       {/* Filters */}
-      <div className="bg-surface rounded-2xl border border-border p-4 shadow-card">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-4 shadow-xs">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <select value={category} onChange={(e) => setCategory(e.target.value)}
-            className="px-3 py-2.5 bg-surface-secondary border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all">
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-xs font-semibold text-slate-900 dark:text-white focus:outline-none"
+          >
             <option value="">كل التصنيفات</option>
             {Object.entries(CATEGORY_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
           </select>
-          <select value={month} onChange={(e) => setMonth(e.target.value)}
-            className="px-3 py-2.5 bg-surface-secondary border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all">
-            {Array.from({length: 12}, (_, i) => (
-              <option key={i+1} value={String(i+1)}>شهر {i+1}</option>
+          
+          <select
+            value={month}
+            onChange={(e) => setMonth(e.target.value)}
+            className="px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-xs font-semibold text-slate-900 dark:text-white focus:outline-none"
+          >
+            {Array.from({ length: 12 }, (_, i) => (
+              <option key={i + 1} value={String(i + 1)}>شهر {i + 1}</option>
             ))}
           </select>
-          <input type="number" value={year} onChange={(e) => setYear(e.target.value)} min="2020" max="2030"
-            className="px-3 py-2.5 bg-surface-secondary border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all" />
-          <button onClick={handlePrintAll} disabled={filtered.length === 0}
-            className="px-4 py-2.5 bg-gradient-to-l from-primary to-primary-dark text-white text-sm font-semibold rounded-xl hover:shadow-lg transition-all disabled:opacity-50">
-            🖨️ طباعة التقرير
+
+          <input
+            type="number"
+            value={year}
+            onChange={(e) => setYear(e.target.value)}
+            min="2020"
+            max="2035"
+            className="px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-xs font-semibold text-slate-900 dark:text-white focus:outline-none"
+          />
+
+          <button
+            onClick={handlePrintAll}
+            disabled={filtered.length === 0}
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-md shadow-xs transition-colors disabled:opacity-50"
+          >
+            🖨️ طباعة التقرير التجميعي
           </button>
         </div>
       </div>
 
-      {/* Summary */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-        <div className="bg-surface border border-border rounded-xl p-4 text-center">
-          <p className="text-xs text-text-muted mb-1">عدد الفواتير</p>
-          <p className="text-lg font-bold text-text-primary">{filtered.length}</p>
+      {/* Summary Stat Cards */}
+      <div className="grid grid-cols-2 gap-4">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-4 shadow-xs text-center">
+          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">عدد الفواتير المحددة</p>
+          <p className="text-xl font-bold text-slate-900 dark:text-white">{filtered.length}</p>
         </div>
-        <div className="bg-surface border border-border rounded-xl p-4 text-center">
-          <p className="text-xs text-text-muted mb-1">الإجمالي</p>
-          <p className="text-lg font-bold text-primary">{formatCurrency(total)}</p>
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-4 shadow-xs text-center">
+          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">إجمالي المبلغ في التقرير</p>
+          <p className="text-xl font-black text-blue-600 dark:text-blue-400">{formatCurrency(total)}</p>
         </div>
       </div>
 
-      {/* Invoice List for Print Selection */}
+      {/* Clean Corporate Table */}
       {filtered.length > 0 ? (
-        <div className="bg-surface rounded-2xl border border-border shadow-card overflow-hidden">
-          <div className="grid grid-cols-5 text-xs font-medium text-text-muted bg-surface-secondary p-3 border-b border-border">
-            <span>الرقم</span><span>الاسم</span><span>التصنيف</span><span>المبلغ</span><span>التاريخ</span>
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-xs overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-right border-collapse text-xs">
+              <thead>
+                <tr className="bg-slate-100/90 dark:bg-slate-800/90 border-b border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 font-bold uppercase">
+                  <th className="p-3">رقم الفاتورة</th>
+                  <th className="p-3">اسم الفاتورة</th>
+                  <th className="p-3">التصنيف</th>
+                  <th className="p-3">المبلغ</th>
+                  <th className="p-3">التاريخ</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
+                {filtered.map((inv) => (
+                  <tr key={inv.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                    <td className="p-3 font-bold font-mono text-slate-900 dark:text-white" dir="ltr text-right">
+                      {inv.invoiceNumber}
+                    </td>
+                    <td className="p-3 font-bold text-slate-900 dark:text-white">
+                      {inv.name}
+                    </td>
+                    <td className="p-3 font-semibold text-slate-700 dark:text-slate-300">
+                      {CATEGORY_LABELS[inv.category]}
+                    </td>
+                    <td className="p-3 font-extrabold text-slate-900 dark:text-white">
+                      {formatCurrency(inv.amount, inv.currency)}
+                    </td>
+                    <td className="p-3 text-slate-600 dark:text-slate-400 font-medium">
+                      {formatShortDate(inv.date)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-          {filtered.map((inv) => (
-            <div key={inv.id} className="grid grid-cols-5 text-sm p-3 border-b border-border-light last:border-0 hover:bg-surface-hover transition-colors">
-              <span className="text-text-muted text-xs">{inv.invoiceNumber}</span>
-              <span className="font-medium truncate">{inv.name}</span>
-              <span className="text-xs">{CATEGORY_LABELS[inv.category]}</span>
-              <span className="font-semibold">{formatCurrency(inv.amount, inv.currency)}</span>
-              <span className="text-text-muted text-xs">{formatShortDate(inv.date)}</span>
-            </div>
-          ))}
         </div>
       ) : (
-        <div className="text-center py-12 text-text-muted text-sm">لا توجد فواتير في هذه الفترة</div>
+        <div className="text-center py-12 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-500 text-xs font-medium">
+          لا توجد فواتير مطابقة للفترة والتصنيف المحدد
+        </div>
       )}
     </div>
   );
