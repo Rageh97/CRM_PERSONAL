@@ -14,6 +14,7 @@ interface StatCardProps {
   icon: React.ReactNode;
   color: 'revenue' | 'expense' | 'return' | 'salary' | 'primary';
   invertChange?: boolean; // For expenses, decrease is good
+  isCount?: boolean; // If true, render plain integer count
 }
 
 const colorMap = {
@@ -24,26 +25,28 @@ const colorMap = {
   primary: { bg: 'bg-primary-50', text: 'text-primary', border: 'border-primary/20' },
 };
 
-export function StatCard({ title, value, change, currency = 'SAR', icon, color, invertChange }: StatCardProps) {
+export function StatCard({ title, value, change, currency = 'SAR', icon, color, invertChange, isCount }: StatCardProps) {
   const colors = colorMap[color];
   const isPositive = invertChange ? change <= 0 : change >= 0;
   const changeColor = isPositive ? 'text-success' : 'text-danger';
   const changeBg = isPositive ? 'bg-success-bg' : 'bg-danger-bg';
 
   return (
-    <div className={`bg-surface rounded-2xl border ${colors.border} p-4 sm:p-5 shadow-card hover:shadow-md transition-all duration-300`}>
+    <div className={`bg-white dark:bg-slate-900 rounded-md border border-slate-200 dark:border-slate-800 p-4 sm:p-5 shadow-xs transition-all duration-300`}>
       <div className="flex items-start justify-between mb-3">
-        <div className={`w-10 h-10 ${colors.bg} rounded-xl flex items-center justify-center`}>
+        <div className={`w-9 h-9 ${colors.bg} rounded-md flex items-center justify-center`}>
           <span className={colors.text}>{icon}</span>
         </div>
         {change !== 0 && (
-          <span className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full ${changeBg} ${changeColor}`}>
+          <span className={`inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full ${changeBg} ${changeColor}`}>
             {change > 0 ? '↑' : '↓'} {Math.abs(change).toFixed(1)}%
           </span>
         )}
       </div>
-      <p className="text-xs text-text-muted mb-1">{title}</p>
-      <p className="text-lg sm:text-xl font-bold text-text-primary">{formatCurrency(value, currency)}</p>
+      <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">{title}</p>
+      <p className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white">
+        {isCount ? value : formatCurrency(value, currency)}
+      </p>
     </div>
   );
 }
@@ -59,45 +62,40 @@ interface RecentInvoice {
   amount: number;
   currency: string;
   category: string;
-  date: Date | string;
-  createdBy: { name: string };
+  date: Date;
+  createdBy?: { name: string };
 }
 
-const categoryDot: Record<string, string> = {
-  REVENUE: 'bg-revenue',
-  EXPENSE: 'bg-expense',
-  RETURN: 'bg-return',
-  SALARY: 'bg-salary',
-};
-
 export function RecentInvoicesList({ invoices }: { invoices: RecentInvoice[] }) {
-  if (!invoices.length) {
-    return (
-      <div className="text-center py-8 text-text-muted text-sm">
-        لا توجد فواتير بعد
-      </div>
-    );
+  if (!invoices || invoices.length === 0) {
+    return <div className="text-center py-8 text-slate-500 text-xs">لا توجد فواتير مؤخراً</div>;
   }
+
+  const categoryColor: Record<string, string> = {
+    REVENUE: 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300',
+    EXPENSE: 'bg-rose-50 text-rose-800 border-rose-200 dark:bg-rose-950 dark:text-rose-300',
+    RETURN: 'bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950 dark:text-amber-300',
+    SALARY: 'bg-purple-50 text-purple-800 border-purple-200 dark:bg-purple-950 dark:text-purple-300',
+  };
 
   return (
     <div className="space-y-2">
-      {invoices.map((inv, idx) => (
+      {invoices.map((inv) => (
         <div
           key={inv.id}
-          className="flex items-center justify-between p-3 rounded-xl hover:bg-surface-hover transition-colors"
-          style={{ animationDelay: `${idx * 0.05}s` }}
+          className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-950 rounded-md border border-slate-200 dark:border-slate-800 text-xs transition-colors"
         >
-          <div className="flex items-center gap-3 min-w-0">
-            <div className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${categoryDot[inv.category] || 'bg-primary'}`} />
-            <div className="min-w-0">
-              <p className="text-sm font-medium text-text-primary truncate">{inv.name}</p>
-              <p className="text-xs text-text-muted">{CATEGORY_LABELS[inv.category]} • {inv.invoiceNumber}</p>
+          <div className="flex items-center gap-3">
+            <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${categoryColor[inv.category]}`}>
+              {CATEGORY_LABELS[inv.category] || inv.category}
+            </span>
+            <div>
+              <p className="font-bold text-slate-900 dark:text-white">{inv.name}</p>
+              <p className="text-[10px] text-slate-500 font-mono" dir="ltr">{inv.invoiceNumber}</p>
             </div>
           </div>
-          <div className="text-end flex-shrink-0 ms-3">
-            <p className={`text-sm font-semibold ${inv.category === 'REVENUE' ? 'text-revenue' : inv.category === 'EXPENSE' || inv.category === 'SALARY' ? 'text-expense' : 'text-return'}`}>
-              {inv.category === 'REVENUE' ? '+' : '-'}{formatCurrency(inv.amount, inv.currency)}
-            </p>
+          <div className="text-left font-bold text-slate-900 dark:text-white">
+            {formatCurrency(inv.amount, inv.currency)}
           </div>
         </div>
       ))}
@@ -106,36 +104,27 @@ export function RecentInvoicesList({ invoices }: { invoices: RecentInvoice[] }) 
 }
 
 // ═══════════════════════════════════════
-// BestWorstMonths Card
+// BestWorstCard
 // ═══════════════════════════════════════
 
-interface BestWorstProps {
+interface BestWorstCardProps {
   best: { month: string; amount: number };
   worst: { month: string; amount: number };
 }
 
-export function BestWorstCard({ best, worst }: BestWorstProps) {
+export function BestWorstCard({ best, worst }: BestWorstCardProps) {
   return (
-    <div className="grid grid-cols-2 gap-3">
-      <div className="bg-success-bg/50 border border-success/20 rounded-xl p-4 text-center">
-        <div className="w-8 h-8 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-2">
-          <svg className="w-4 h-4 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 10.5L12 3m0 0l7.5 7.5M12 3v18" />
-          </svg>
-        </div>
-        <p className="text-xs text-text-muted mb-1">أفضل شهر</p>
-        <p className="font-bold text-success text-sm">{best.month}</p>
-        <p className="text-xs text-text-secondary mt-0.5">{formatCurrency(best.amount)}</p>
+    <div className="grid grid-cols-2 gap-3 text-xs">
+      <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 rounded-md border border-emerald-200 dark:border-emerald-900">
+        <p className="text-emerald-700 dark:text-emerald-400 font-bold mb-1">أفضل شهر (أعلى ربح)</p>
+        <p className="text-sm font-extrabold text-emerald-900 dark:text-emerald-200">{best.month}</p>
+        <p className="text-xs font-bold text-emerald-700 dark:text-emerald-400 mt-1">{formatCurrency(best.amount)}</p>
       </div>
-      <div className="bg-danger-bg/50 border border-danger/20 rounded-xl p-4 text-center">
-        <div className="w-8 h-8 bg-danger/10 rounded-full flex items-center justify-center mx-auto mb-2">
-          <svg className="w-4 h-4 text-danger" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3" />
-          </svg>
-        </div>
-        <p className="text-xs text-text-muted mb-1">أسوأ شهر</p>
-        <p className="font-bold text-danger text-sm">{worst.month}</p>
-        <p className="text-xs text-text-secondary mt-0.5">{formatCurrency(worst.amount)}</p>
+
+      <div className="p-3 bg-rose-50 dark:bg-rose-950/40 rounded-md border border-rose-200 dark:border-rose-900">
+        <p className="text-rose-700 dark:text-rose-400 font-bold mb-1">أقل شهر (أدنى أرباح)</p>
+        <p className="text-sm font-extrabold text-rose-900 dark:text-rose-200">{worst.month}</p>
+        <p className="text-xs font-bold text-rose-700 dark:text-rose-400 mt-1">{formatCurrency(worst.amount)}</p>
       </div>
     </div>
   );

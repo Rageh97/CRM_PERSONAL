@@ -10,7 +10,7 @@ export default async function DashboardPage() {
   ]);
 
   // Serialize dates for client
-  const serializedInvoices = recentInvoices.map((inv) => ({
+  const serializedInvoices = recentInvoices.map((inv: any) => ({
     ...inv,
     date: inv.date.toISOString(),
     createdAt: inv.createdAt.toISOString(),

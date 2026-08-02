@@ -10,7 +10,7 @@ export default async function ReportsPage() {
     include: { createdBy: { select: { name: true } } },
   });
 
-  const serialized = invoices.map((inv) => ({
+  const serialized = invoices.map((inv: any) => ({
     ...inv,
     date: inv.date.toISOString(),
     createdAt: inv.createdAt.toISOString(),

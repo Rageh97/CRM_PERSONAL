@@ -11,7 +11,7 @@ export default async function ActivityPage() {
     include: { user: { select: { name: true, role: true } } },
   });
 
-  const serialized = activities.map((a) => ({
+  const serialized = activities.map((a: any) => ({
     ...a,
     createdAt: a.createdAt.toISOString(),
   }));
