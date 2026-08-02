@@ -20,11 +20,11 @@ const NAV_ITEMS = [
 ];
 
 const MOBILE_NAV = [
-  { href: '/dashboard', label: 'الرئيسية', icon: 'home' },
-  { href: '/dashboard/invoices', label: 'الفواتير', icon: 'invoice' },
-  { href: '/dashboard/invoices/new', label: 'جديدة', icon: 'plus' },
-  { href: '/dashboard/comparisons', label: 'المقارنات', icon: 'chart' },
-  { href: '/dashboard/settings', label: 'المزيد', icon: 'menu' },
+  { href: '/dashboard', label: 'الرئيسية', icon: 'home', isMenu: false },
+  { href: '/dashboard/invoices', label: 'الفواتير', icon: 'invoice', isMenu: false },
+  { href: '/dashboard/invoices/new', label: 'جديدة', icon: 'plus', isMenu: false },
+  { href: '/dashboard/comparisons', label: 'المقارنات', icon: 'chart', isMenu: false },
+  { href: '#', label: 'المزيد', icon: 'menu', isMenu: true },
 ];
 
 function NavIcon({ name, className = "w-5 h-5" }: { name: string; className?: string }) {
@@ -38,7 +38,7 @@ function NavIcon({ name, className = "w-5 h-5" }: { name: string; className?: st
     shield: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /></svg>,
     activity: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
     settings: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>,
-    menu: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" /></svg>,
+    menu: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>,
     sun: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" /></svg>,
     moon: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" /></svg>,
     logout: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" /></svg>,
@@ -58,21 +58,30 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="flex min-h-screen">
-      {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex lg:flex-col lg:w-64 bg-surface border-e border-border fixed inset-y-0 start-0 z-40">
+      {/* Sidebar (Responsive Mobile Drawer & Desktop Fixed Sidebar) */}
+      <aside className={`fixed inset-y-0 start-0 z-50 w-64 bg-white dark:bg-slate-900 border-e border-slate-200 dark:border-slate-800 flex flex-col transition-transform duration-300 ${
+        sidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:translate-x-0'
+      }`}>
         {/* Logo */}
-        <div className="p-5 border-b border-border">
+        <div className="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary-dark rounded-xl flex items-center justify-center flex-shrink-0">
+            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
               <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
               </svg>
             </div>
             <div>
-              <h2 className="font-bold text-sm text-text-primary">الإدارة المالية</h2>
-              <p className="text-xs text-text-muted">خالد الشهراني</p>
+              <h2 className="font-bold text-sm text-slate-900 dark:text-white">الإدارة المالية</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400">خالد الشهراني</p>
             </div>
           </div>
+
+          <button
+            onClick={() => setSidebarOpen(false)}
+            className="lg:hidden p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-white font-bold"
+          >
+            ✕
+          </button>
         </div>
 
         {/* Nav Items */}
@@ -83,13 +92,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+                onClick={() => setSidebarOpen(false)}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-xs font-bold transition-colors ${
                   isActive
-                    ? 'bg-primary/10 text-primary'
-                    : 'text-text-secondary hover:bg-surface-hover hover:text-text-primary'
+                    ? 'bg-blue-600 text-white shadow-xs'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
                 }`}
               >
-                <NavIcon name={item.icon} className={`w-5 h-5 ${isActive ? 'text-primary' : ''}`} />
+                <NavIcon name={item.icon} className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-500 dark:text-slate-400'}`} />
                 {item.label}
               </Link>
             );
@@ -97,30 +107,28 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </nav>
 
         {/* User Section */}
-        <div className="p-3 border-t border-border">
+        <div className="p-3 border-t border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-3 px-3 py-2 mb-2">
-            <div className="w-9 h-9 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0">
-              <span className="text-sm font-bold text-primary">
-                {session?.user?.name?.charAt(0) || 'U'}
-              </span>
+            <div className="w-8 h-8 bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 rounded-md flex items-center justify-center font-bold text-xs flex-shrink-0">
+              {session?.user?.name?.charAt(0) || 'U'}
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-medium text-text-primary truncate">{session?.user?.name}</p>
-              <p className="text-xs text-text-muted">{ROLE_LABELS[userRole] || userRole}</p>
+              <p className="text-xs font-bold text-slate-900 dark:text-white truncate">{session?.user?.name}</p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">{ROLE_LABELS[userRole] || userRole}</p>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
             <button
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs text-text-secondary hover:bg-surface-hover transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-md text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 transition-colors"
             >
               <NavIcon name={theme === 'dark' ? 'sun' : 'moon'} className="w-4 h-4" />
               {theme === 'dark' ? 'نهاري' : 'ليلي'}
             </button>
             <button
               onClick={() => signOut({ callbackUrl: '/login' })}
-              className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs text-danger hover:bg-danger-bg transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-md text-xs font-bold text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950 hover:bg-red-100 transition-colors"
             >
               <NavIcon name="logout" className="w-4 h-4" />
               خروج
@@ -129,36 +137,37 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       </aside>
 
-      {/* Mobile Overlay */}
+      {/* Mobile Backdrop Overlay */}
       {sidebarOpen && (
-        <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />
       )}
 
       {/* Main Content */}
       <main className="flex-1 lg:ps-64 pb-20 lg:pb-0 w-full max-w-full min-w-0 overflow-x-hidden">
         {/* Mobile Header */}
-        <header className="lg:hidden sticky top-0 z-30 bg-surface/80 backdrop-blur-xl border-b border-border px-4 py-3">
+        <header className="lg:hidden sticky top-0 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary-dark rounded-lg flex items-center justify-center">
-                <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
-                </svg>
-              </div>
-              <h1 className="font-bold text-text-primary">الإدارة المالية</h1>
+              <button
+                onClick={() => setSidebarOpen(true)}
+                className="p-1.5 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md"
+              >
+                <NavIcon name="menu" className="w-5 h-5" />
+              </button>
+              <h1 className="font-bold text-xs text-slate-900 dark:text-white">الإدارة المالية</h1>
             </div>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="p-2 rounded-lg hover:bg-surface-hover transition-colors text-text-secondary"
+                className="p-1.5 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-700 dark:text-slate-300"
               >
-                <NavIcon name={theme === 'dark' ? 'sun' : 'moon'} className="w-5 h-5" />
+                <NavIcon name={theme === 'dark' ? 'sun' : 'moon'} className="w-4 h-4" />
               </button>
               <button
                 onClick={() => signOut({ callbackUrl: '/login' })}
-                className="p-2 rounded-lg hover:bg-danger-bg transition-colors text-danger"
+                className="p-1.5 rounded-md hover:bg-red-50 dark:hover:bg-red-950 transition-colors text-red-600"
               >
-                <NavIcon name="logout" className="w-5 h-5" />
+                <NavIcon name="logout" className="w-4 h-4" />
               </button>
             </div>
           </div>
@@ -171,31 +180,48 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </main>
 
       {/* Mobile Bottom Nav */}
-      <nav className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-surface/90 backdrop-blur-xl border-t border-border">
+      <nav className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800">
         <div className="flex items-center justify-around px-2 py-1">
           {MOBILE_NAV.map((item) => {
-            const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href) && item.href !== '/dashboard/settings');
+            const isActive = !item.isMenu && (pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href)));
             const isAddButton = item.icon === 'plus';
+
+            if (item.isMenu) {
+              return (
+                <button
+                  key={item.label}
+                  type="button"
+                  onClick={() => setSidebarOpen(!sidebarOpen)}
+                  className={`flex flex-col items-center gap-0.5 py-1.5 px-3 rounded-md transition-colors ${
+                    sidebarOpen ? 'text-blue-600 font-bold' : 'text-slate-500 dark:text-slate-400'
+                  }`}
+                >
+                  <NavIcon name={item.icon} className="w-5 h-5" />
+                  <span className="text-[10px] font-bold">{item.label}</span>
+                </button>
+              );
+            }
+
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex flex-col items-center gap-0.5 py-1.5 px-3 rounded-xl transition-all duration-200 ${
+                className={`flex flex-col items-center gap-0.5 py-1.5 px-3 rounded-md transition-colors ${
                   isAddButton
-                    ? 'relative -mt-5'
+                    ? 'relative -mt-4'
                     : isActive
-                    ? 'text-primary'
-                    : 'text-text-muted'
+                    ? 'text-blue-600 font-bold'
+                    : 'text-slate-500 dark:text-slate-400'
                 }`}
               >
                 {isAddButton ? (
-                  <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-dark rounded-full flex items-center justify-center shadow-lg shadow-primary/30">
-                    <NavIcon name={item.icon} className="w-6 h-6 text-white" />
+                  <div className="w-11 h-11 bg-blue-600 rounded-full flex items-center justify-center shadow-md text-white">
+                    <NavIcon name={item.icon} className="w-5 h-5" />
                   </div>
                 ) : (
                   <NavIcon name={item.icon} className="w-5 h-5" />
                 )}
-                <span className={`text-[10px] font-medium ${isAddButton ? 'text-primary mt-0.5' : ''}`}>
+                <span className={`text-[10px] font-bold ${isAddButton ? 'text-blue-600 mt-0.5' : ''}`}>
                   {item.label}
                 </span>
               </Link>
