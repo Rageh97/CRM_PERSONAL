@@ -1,5 +1,5 @@
 import { getDashboardStats, getMonthlyData, getRecentInvoices, getBestWorstMonths } from '@/features/dashboard/actions';
-import { DashboardClient } from './client';
+import { DashboardClient } from '@/app/dashboard/client';
 
 export default async function DashboardPage() {
   const [stats, monthlyData, recentInvoices, bestWorst] = await Promise.all([
