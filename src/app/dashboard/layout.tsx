@@ -60,7 +60,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <div className="flex min-h-screen">
       {/* Sidebar (Responsive Mobile Drawer & Desktop Fixed Sidebar) */}
       <aside className={`fixed inset-y-0 start-0 z-50 w-64 bg-white dark:bg-slate-900 border-e border-slate-200 dark:border-slate-800 flex flex-col transition-transform duration-300 ${
-        sidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:translate-x-0'
+        sidebarOpen ? 'translate-x-0 shadow-2xl' : 'translate-x-full lg:translate-x-0'
       }`}>
         {/* Logo */}
         <div className="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
