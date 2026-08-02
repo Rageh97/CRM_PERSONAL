@@ -12,9 +12,16 @@ export async function createInvoice(data: InvoiceInput & { attachment?: string }
 
   const validated = invoiceSchema.parse(data);
 
-  // Generate unique invoice number
+  // Generate unique invoice number safely
   const count = await prisma.invoice.count();
-  const invoiceNumber = generateInvoiceNumber(count);
+  let counter = count + 1;
+  let invoiceNumber = generateInvoiceNumber(counter);
+  let existing = await prisma.invoice.findUnique({ where: { invoiceNumber } });
+  while (existing) {
+    counter++;
+    invoiceNumber = generateInvoiceNumber(counter);
+    existing = await prisma.invoice.findUnique({ where: { invoiceNumber } });
+  }
 
   const invoice = await prisma.invoice.create({
     data: {
