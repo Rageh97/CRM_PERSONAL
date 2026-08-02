@@ -12,10 +12,9 @@ const NAV_ITEMS = [
   { href: '/dashboard', label: 'الرئيسية', icon: 'home', permission: 'invoices:view' },
   { href: '/dashboard/invoices', label: 'الفواتير', icon: 'invoice', permission: 'invoices:view' },
   { href: '/dashboard/invoices/new', label: 'فاتورة جديدة', icon: 'plus', permission: 'invoices:create' },
-  { href: '/dashboard/employees', label: 'الموظفين', icon: 'users', permission: 'employees:manage' },
+  { href: '/dashboard/users', label: 'الموظفين والصلاحيات', icon: 'users', permission: 'users:manage' },
   { href: '/dashboard/comparisons', label: 'المقارنات', icon: 'chart', permission: 'invoices:view' },
   { href: '/dashboard/reports', label: 'التقارير', icon: 'report', permission: 'reports:export' },
-  { href: '/dashboard/users', label: 'المستخدمين', icon: 'shield', permission: 'users:manage' },
   { href: '/dashboard/activity', label: 'سجل النشاط', icon: 'activity', permission: 'activity:view' },
   { href: '/dashboard/settings', label: 'الإعدادات', icon: 'settings', permission: 'settings:manage' },
 ];

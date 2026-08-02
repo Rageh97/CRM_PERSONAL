@@ -1,14 +1,5 @@
-import { getEmployees } from '@/features/employees/actions';
-import { EmployeeListClient } from './client';
+import { redirect } from 'next/navigation';
 
-export default async function EmployeesPage() {
-  const employees = await getEmployees();
-  const serialized = employees.map((e) => ({
-    ...e,
-    hireDate: e.hireDate.toISOString(),
-    createdAt: e.createdAt.toISOString(),
-    updatedAt: e.updatedAt.toISOString(),
-  }));
-
-  return <EmployeeListClient employees={serialized} />;
+export default function EmployeesPage() {
+  redirect('/dashboard/users');
 }
