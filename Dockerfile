@@ -1,0 +1,53 @@
+# ═══════════════════════════════════════════════════
+# Dockerfile for Dokploy / Hostinger VPS Deployment
+# Next.js Standalone + Prisma SQLite Automatic Migration
+# ═══════════════════════════════════════════════════
+
+# 1. Base Image
+FROM node:20-alpine AS base
+WORKDIR /app
+RUN apk add --no-libc6-compat openssl sqlite
+
+# 2. Dependencies Stage
+FROM base AS deps
+COPY package.json package-lock.json ./
+RUN npm ci
+
+# 3. Builder Stage
+FROM base AS builder
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+
+# Set environment variables for build time
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
+
+# Generate Prisma Client & Build Standalone Next.js
+RUN npx prisma generate
+RUN npm run build
+
+# 4. Production Runner Stage
+FROM base AS runner
+ENV NODE_ENV=production
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+ENV DATABASE_URL="file:/app/prisma/dev.db"
+
+# Copy standalone build & static files
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+
+# Copy Prisma schema & seed files for runtime migrations
+COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/docker-entrypoint.sh ./docker-entrypoint.sh
+
+RUN chmod +x ./docker-entrypoint.sh
+
+# Expose Port 3000
+EXPOSE 3000
+
+# Entrypoint script runs prisma db push & seed automatically then starts server
+ENTRYPOINT ["./docker-entrypoint.sh"]

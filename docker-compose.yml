@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  shahrani-finance:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: shahrani-finance-app
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DATABASE_URL=file:/app/prisma/dev.db
+      - NEXTAUTH_URL=http://localhost:3000
+      - AUTH_SECRET=shahrani_secret_production_key_2026_super_secure
+    volumes:
+      # Persist SQLite database file across Dokploy container deployments
+      - db_data:/app/prisma
+
+volumes:
+  db_data:
+    driver: local
