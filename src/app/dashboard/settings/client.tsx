@@ -3,15 +3,16 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { CURRENCY_LABELS } from '@/lib/utils';
+import { ConfirmModal } from '@/components/ui/ConfirmModal';
+import { useToast } from '@/components/providers/ToastProvider';
 
 export function SettingsClient({ settings }: { settings: any }) {
   const router = useRouter();
   const { data: session } = useSession();
+  const { showToast } = useToast();
   const [loading, setLoading] = useState(false);
   const [resetLoading, setResetLoading] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [resetSuccess, setResetSuccess] = useState('');
+  const [showResetModal, setShowResetModal] = useState(false);
   const [error, setError] = useState('');
 
   const currentUserEmail = session?.user?.email || '';
@@ -32,16 +33,18 @@ export function SettingsClient({ settings }: { settings: any }) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setSaved(false);
-    setResetSuccess('');
 
     if (form.adminPassword && form.adminPassword !== form.confirmPassword) {
-      setError('كلمة المرور وتأكيد كلمة المرور غير متطابقين');
+      const msg = 'كلمة المرور وتأكيد كلمة المرور غير متطابقين';
+      setError(msg);
+      showToast({ type: 'error', message: msg });
       return;
     }
 
     if (form.adminPassword && form.adminPassword.length < 6) {
-      setError('كلمة المرور يجب أن تكون 6 أحرف على الأقل');
+      const msg = 'كلمة المرور يجب أن تكون 6 أحرف على الأقل';
+      setError(msg);
+      showToast({ type: 'error', message: msg });
       return;
     }
 
@@ -58,29 +61,20 @@ export function SettingsClient({ settings }: { settings: any }) {
         throw new Error(data.error || 'فشل في حفظ الإعدادات');
       }
 
-      setSaved(true);
+      showToast({ type: 'success', message: 'تم حفظ وتحديث بيانات حساب السوبر أدمن بنجاح' });
       setForm((prev) => ({ ...prev, adminPassword: '', confirmPassword: '' }));
       router.refresh();
-      setTimeout(() => setSaved(false), 4000);
     } catch (err: any) {
-      setError(err.message || 'حدث خطأ أثناء الحفظ');
+      const msg = err.message || 'حدث خطأ أثناء الحفظ';
+      setError(msg);
+      showToast({ type: 'error', message: msg });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleResetDemoData = async () => {
-    const confirmFirst = confirm(
-      '⚠️ تحذير حاسم: هل أنت متأكد من حذف كافة البيانات التجريبية؟\n\nسيتم حذف جميع الفواتير والموظفين والمستخدمين نهائياً، مع الإبقاء فقط على حساب السوبر أدمن الخاص بك.'
-    );
-    if (!confirmFirst) return;
-
-    const confirmSecond = confirm('هل أنت متأكد 100%؟ لا يمكن التراجع عن هذا الإجراء إطلاقاً!');
-    if (!confirmSecond) return;
-
+  const executeResetDemoData = async () => {
     setError('');
-    setSaved(false);
-    setResetSuccess('');
     setResetLoading(true);
 
     try {
@@ -95,10 +89,16 @@ export function SettingsClient({ settings }: { settings: any }) {
       }
 
       const data = await res.json();
-      setResetSuccess(data.message || 'تم مسح كافة البيانات التجريبية بنجاح');
+      showToast({
+        type: 'success',
+        message: data.message || 'تم حذف كافة البيانات التجريبية بنجاح، والإبقاء على حساب السوبر أدمن فقط',
+      });
+      setShowResetModal(false);
       router.refresh();
     } catch (err: any) {
-      setError(err.message || 'حدث خطأ أثناء مسح البيانات التجريبية');
+      const msg = err.message || 'حدث خطأ أثناء مسح البيانات التجريبية';
+      setError(msg);
+      showToast({ type: 'error', message: msg });
     } finally {
       setResetLoading(false);
     }
@@ -106,25 +106,25 @@ export function SettingsClient({ settings }: { settings: any }) {
 
   return (
     <div className="max-w-3xl mx-auto space-y-6 animate-fade-in">
+      {/* Confirm Reset Modal */}
+      <ConfirmModal
+        isOpen={showResetModal}
+        title="تأكيد حاسم: حذف البيانات التجريبية بالكامل"
+        message="هل أنت متأكد 100% من حذف كافة الفواتير والموظفين والمستخدمين الإضافيين؟ سيتم البدء بنظام نظيف وفارغ كلياً مع الحفاظ التام على حساب السوبر أدمن والبريد الإلكتروني وكلمة المرور الخاصة بك."
+        confirmText="نعم، حذف البيانات التجريبية والبدء من جديد"
+        cancelText="إلغاء"
+        type="danger"
+        loading={resetLoading}
+        onConfirm={executeResetDemoData}
+        onCancel={() => setShowResetModal(false)}
+      />
+
       <div>
         <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">إعدادات الحساب والنظام</h1>
         <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">تحديث البريد وكلمة المرور وحذف البيانات التجريبية</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {saved && (
-          <div className="bg-emerald-50 border border-emerald-300 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 rounded-md p-3.5 text-xs text-center font-bold animate-fade-in">
-            ✅ تم حفظ الإعدادات وتحديث بيانات الحساب بنجاح
-          </div>
-        )}
-
-        {resetSuccess && (
-          <div className="bg-blue-50 border border-blue-300 text-blue-800 dark:bg-blue-950 dark:text-blue-300 rounded-md p-4 text-xs text-center font-bold space-y-1 animate-fade-in">
-            <p className="text-sm font-extrabold">🎉 {resetSuccess}</p>
-            <p className="text-[11px] font-normal text-blue-600 dark:text-blue-400">النظام جاهز الآن لاستقبال بياناتك الحقيقية بالكامل.</p>
-          </div>
-        )}
-
         {error && (
           <div className="bg-rose-50 border border-rose-300 text-rose-800 dark:bg-rose-950 dark:text-rose-300 rounded-md p-3.5 text-xs text-center font-bold animate-fade-in">
             {error}
@@ -218,11 +218,11 @@ export function SettingsClient({ settings }: { settings: any }) {
           </div>
           <button
             type="button"
-            onClick={handleResetDemoData}
+            onClick={() => setShowResetModal(true)}
             disabled={resetLoading}
             className="w-full sm:w-auto px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-md shadow-xs transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
           >
-            {resetLoading ? 'جاري تفريغ البيانات...' : 'حذف البيانات التجريبية والبدء من الجديد'}
+            حذف البيانات التجريبية والبدء من الجديد
           </button>
         </div>
       </div>

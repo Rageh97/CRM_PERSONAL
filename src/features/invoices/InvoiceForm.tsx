@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createInvoice, updateInvoice } from '@/features/invoices/actions';
 import { CATEGORY_LABELS, CURRENCY_LABELS } from '@/lib/utils';
+import { useToast } from '@/components/providers/ToastProvider';
 
 interface InvoiceFormProps {
   invoice?: any;
@@ -13,6 +14,7 @@ interface InvoiceFormProps {
 
 export function InvoiceForm({ invoice, employees = [], mode = 'create' }: InvoiceFormProps) {
   const router = useRouter();
+  const { showToast } = useToast();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -40,47 +42,55 @@ export function InvoiceForm({ invoice, employees = [], mode = 'create' }: Invoic
 
       if (mode === 'edit' && invoice) {
         await updateInvoice(invoice.id, data);
+        showToast({ type: 'success', message: 'تم تحديث بيانات الفاتورة بنجاح' });
       } else {
         await createInvoice(data);
+        showToast({ type: 'success', message: 'تم إنشاء الفاتورة الجديدة بنجاح' });
       }
 
       router.push('/dashboard/invoices');
       router.refresh();
     } catch (err: any) {
-      setError(err.message || 'حدث خطأ أثناء حفظ الفاتورة');
+      const msg = err.message || 'حدث خطأ أثناء حفظ الفاتورة';
+      setError(msg);
+      showToast({ type: 'error', message: msg });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5 animate-fade-in">
+    <form onSubmit={handleSubmit} className="space-y-5 animate-fade-in max-w-2xl mx-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 sm:p-6 rounded-md shadow-xs">
+      <h2 className="text-base font-bold text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-800 pb-3">
+        {mode === 'edit' ? 'تعديل بيانات الفاتورة' : 'إضافة فاتورة جديدة'}
+      </h2>
+
       {error && (
-        <div className="bg-danger-bg border border-danger/20 text-danger rounded-xl p-3 text-sm">
+        <div className="bg-rose-50 border border-rose-200 text-rose-700 dark:bg-rose-950 dark:text-rose-300 rounded-md p-3 text-xs font-bold">
           {error}
         </div>
       )}
 
       {/* Name */}
       <div>
-        <label className="block text-sm font-medium text-text-secondary mb-2">
-          اسم الفاتورة <span className="text-danger">*</span>
+        <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+          اسم الفاتورة <span className="text-red-500">*</span>
         </label>
         <input
           type="text"
           value={form.name}
           onChange={(e) => setForm({ ...form, name: e.target.value })}
-          placeholder="مثال: اشتراك سيرفر"
+          placeholder="مثال: اشتراك خوادم ورخص برمجية"
           required
-          className="w-full px-4 py-3 bg-surface-secondary border border-border rounded-xl text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+          className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-600 transition-colors"
         />
       </div>
 
       {/* Amount + Currency */}
       <div className="grid grid-cols-3 gap-3">
         <div className="col-span-2">
-          <label className="block text-sm font-medium text-text-secondary mb-2">
-            المبلغ <span className="text-danger">*</span>
+          <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+            المبلغ <span className="text-red-500">*</span>
           </label>
           <input
             type="number"
@@ -90,15 +100,15 @@ export function InvoiceForm({ invoice, employees = [], mode = 'create' }: Invoic
             onChange={(e) => setForm({ ...form, amount: e.target.value })}
             placeholder="0.00"
             required
-            className="w-full px-4 py-3 bg-surface-secondary border border-border rounded-xl text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+            className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-600 transition-colors font-mono"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-text-secondary mb-2">العملة</label>
+          <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">العملة</label>
           <select
             value={form.currency}
             onChange={(e) => setForm({ ...form, currency: e.target.value })}
-            className="w-full px-3 py-3 bg-surface-secondary border border-border rounded-xl text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+            className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-xs font-semibold text-slate-900 dark:text-white focus:outline-none focus:border-blue-600 transition-colors"
           >
             {Object.entries(CURRENCY_LABELS).map(([key, label]) => (
               <option key={key} value={key}>{label}</option>
@@ -109,8 +119,8 @@ export function InvoiceForm({ invoice, employees = [], mode = 'create' }: Invoic
 
       {/* Category */}
       <div>
-        <label className="block text-sm font-medium text-text-secondary mb-2">
-          التصنيف <span className="text-danger">*</span>
+        <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+          التصنيف المالي <span className="text-red-500">*</span>
         </label>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {Object.entries(CATEGORY_LABELS).map(([key, label]) => (
@@ -118,13 +128,10 @@ export function InvoiceForm({ invoice, employees = [], mode = 'create' }: Invoic
               key={key}
               type="button"
               onClick={() => setForm({ ...form, category: key, employeeId: key !== 'SALARY' ? '' : form.employeeId })}
-              className={`px-3 py-2.5 rounded-xl text-sm font-medium border transition-all duration-200 ${
+              className={`py-2 px-3 text-xs font-bold rounded-md border transition-all ${
                 form.category === key
-                  ? key === 'REVENUE' ? 'bg-revenue/10 border-revenue text-revenue' :
-                    key === 'EXPENSE' ? 'bg-expense/10 border-expense text-expense' :
-                    key === 'RETURN' ? 'bg-return/10 border-return text-return' :
-                    'bg-salary/10 border-salary text-salary'
-                  : 'bg-surface-secondary border-border text-text-secondary hover:border-text-muted'
+                  ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
+                  : 'bg-slate-50 dark:bg-slate-950 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-100'
               }`}
             >
               {label}
@@ -133,18 +140,20 @@ export function InvoiceForm({ invoice, employees = [], mode = 'create' }: Invoic
         </div>
       </div>
 
-      {/* Employee (for Salary) */}
-      {form.category === 'SALARY' && employees.length > 0 && (
-        <div className="animate-fade-in">
-          <label className="block text-sm font-medium text-text-secondary mb-2">الموظف</label>
+      {/* If SALARY category selected, show Employee dropdown */}
+      {form.category === 'SALARY' && (
+        <div className="bg-purple-50/50 dark:bg-purple-950/30 p-3.5 rounded-md border border-purple-200 dark:border-purple-900 space-y-1.5 animate-fade-in">
+          <label className="block text-xs font-bold text-purple-900 dark:text-purple-300">
+            ربط الفاتورة بالموظف المستحق
+          </label>
           <select
             value={form.employeeId}
             onChange={(e) => setForm({ ...form, employeeId: e.target.value })}
-            className="w-full px-4 py-3 bg-surface-secondary border border-border rounded-xl text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+            className="w-full px-3 py-2 bg-white dark:bg-slate-900 border border-purple-300 dark:border-purple-800 rounded-md text-xs font-semibold text-slate-900 dark:text-white"
           >
-            <option value="">اختر الموظف</option>
+            <option value="">اختيار الموظف (اختياري)</option>
             {employees.map((emp) => (
-              <option key={emp.id} value={emp.id}>{emp.name} — {emp.position}</option>
+              <option key={emp.id} value={emp.id}>{emp.name} — ({emp.position})</option>
             ))}
           </select>
         </div>
@@ -152,54 +161,43 @@ export function InvoiceForm({ invoice, employees = [], mode = 'create' }: Invoic
 
       {/* Date */}
       <div>
-        <label className="block text-sm font-medium text-text-secondary mb-2">التاريخ</label>
+        <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">تاريخ الفاتورة</label>
         <input
           type="date"
           value={form.date}
           onChange={(e) => setForm({ ...form, date: e.target.value })}
-          className="w-full px-4 py-3 bg-surface-secondary border border-border rounded-xl text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+          required
+          className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-600 transition-colors"
         />
       </div>
 
       {/* Description */}
       <div>
-        <label className="block text-sm font-medium text-text-secondary mb-2">
-          الوصف / الملاحظة <span className="text-text-muted text-xs">(اختياري)</span>
-        </label>
+        <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">الوصف والتفاصيل</label>
         <textarea
           value={form.description}
           onChange={(e) => setForm({ ...form, description: e.target.value })}
-          placeholder="أضف وصفاً أو ملاحظة..."
           rows={3}
-          className="w-full px-4 py-3 bg-surface-secondary border border-border rounded-xl text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all resize-none"
+          placeholder="إضافة تفاصيل وملاحظات اختيارية..."
+          className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-600 transition-colors"
         />
       </div>
 
-      {/* Submit */}
-      <div className="flex gap-3 pt-2">
-        <button
-          type="submit"
-          disabled={loading}
-          className="flex-1 py-3 px-4 bg-gradient-to-l from-primary to-primary-dark text-white font-semibold rounded-xl hover:shadow-lg hover:scale-[1.01] active:scale-[0.99] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
-        >
-          {loading ? (
-            <span className="flex items-center justify-center gap-2">
-              <svg className="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-              </svg>
-              جاري الحفظ...
-            </span>
-          ) : (
-            mode === 'edit' ? 'تحديث الفاتورة' : 'إنشاء الفاتورة'
-          )}
-        </button>
+      {/* Action Buttons */}
+      <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800">
         <button
           type="button"
           onClick={() => router.back()}
-          className="px-6 py-3 bg-surface-secondary border border-border text-text-secondary font-medium rounded-xl hover:bg-surface-hover transition-all"
+          className="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-md hover:bg-slate-200 transition-colors"
         >
           إلغاء
+        </button>
+        <button
+          type="submit"
+          disabled={loading}
+          className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-md shadow-xs transition-colors disabled:opacity-50"
+        >
+          {loading ? 'جاري الحفظ...' : mode === 'edit' ? 'تحديث الفاتورة' : 'إنشاء الفاتورة'}
         </button>
       </div>
     </form>

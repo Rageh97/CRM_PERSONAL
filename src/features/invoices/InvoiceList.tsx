@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 import { deleteInvoice } from '@/features/invoices/actions';
 import { formatCurrency, formatShortDate, CATEGORY_LABELS, CURRENCY_LABELS } from '@/lib/utils';
 import { hasPermission } from '@/lib/types';
+import { ConfirmModal } from '@/components/ui/ConfirmModal';
+import { useToast } from '@/components/providers/ToastProvider';
 
 interface InvoiceListProps {
   invoices: any[];
@@ -24,15 +26,16 @@ const ITEMS_PER_PAGE = 20;
 
 export function InvoiceList({ invoices, userRole, userPermissions = [] }: InvoiceListProps) {
   const router = useRouter();
+  const { showToast } = useToast();
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
-  const [deleting, setDeleting] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [loadingDelete, setLoadingDelete] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
 
   const canEdit = hasPermission(userRole, userPermissions, 'invoices:edit');
   const canDelete = hasPermission(userRole, userPermissions, 'invoices:delete');
 
-  // Filtered invoices
   const filtered = useMemo(() => {
     return invoices.filter((inv) => {
       const matchSearch = !search || 
@@ -43,7 +46,6 @@ export function InvoiceList({ invoices, userRole, userPermissions = [] }: Invoic
     });
   }, [invoices, search, categoryFilter]);
 
-  // Reset page when filter changes
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE) || 1;
   const validPage = Math.min(currentPage, totalPages);
 
@@ -55,16 +57,18 @@ export function InvoiceList({ invoices, userRole, userPermissions = [] }: Invoic
   const startIndex = (validPage - 1) * ITEMS_PER_PAGE + 1;
   const endIndex = Math.min(validPage * ITEMS_PER_PAGE, filtered.length);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('هل أنت متأكد من حذف هذه الفاتورة؟')) return;
-    setDeleting(id);
+  const executeDelete = async () => {
+    if (!deletingId) return;
+    setLoadingDelete(true);
     try {
-      await deleteInvoice(id);
+      await deleteInvoice(deletingId);
+      showToast({ type: 'success', message: 'تم حذف الفاتورة بنجاح' });
+      setDeletingId(null);
       router.refresh();
-    } catch (err) {
-      alert('حدث خطأ أثناء الحذف');
+    } catch (err: any) {
+      showToast({ type: 'error', message: err.message || 'حدث خطأ أثناء حذف الفاتورة' });
     } finally {
-      setDeleting(null);
+      setLoadingDelete(false);
     }
   };
 
@@ -126,7 +130,20 @@ export function InvoiceList({ invoices, userRole, userPermissions = [] }: Invoic
 
   return (
     <div className="space-y-4 w-full max-w-full min-w-0">
-      {/* Search & Category Filter Bar */}
+      {/* Confirm Delete Modal */}
+      <ConfirmModal
+        isOpen={!!deletingId}
+        title="تأكيد حذف الفاتورة"
+        message="هل أنت متأكد من رغبتك في حذف هذه الفاتورة؟ سيتم إزالتها نهائياً من السجلات المالية."
+        confirmText="نعم، حذف الفاتورة"
+        cancelText="إلغاء"
+        type="danger"
+        loading={loadingDelete}
+        onConfirm={executeDelete}
+        onCancel={() => setDeletingId(null)}
+      />
+
+      {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3 w-full">
         <div className="relative flex-1 w-full">
           <input
@@ -214,8 +231,7 @@ export function InvoiceList({ invoices, userRole, userPermissions = [] }: Invoic
                   </button>
                   {canDelete && (
                     <button
-                      onClick={() => handleDelete(inv.id)}
-                      disabled={deleting === inv.id}
+                      onClick={() => setDeletingId(inv.id)}
                       className="px-3 py-1.5 text-xs font-bold text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950 rounded border border-red-200 dark:border-red-800"
                     >
                       حذف
@@ -289,11 +305,10 @@ export function InvoiceList({ invoices, userRole, userPermissions = [] }: Invoic
                           </button>
                           {canDelete && (
                             <button
-                              onClick={() => handleDelete(inv.id)}
-                              disabled={deleting === inv.id}
-                              className="px-2.5 py-1 text-xs font-bold text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950/60 hover:bg-red-100 dark:hover:bg-red-900/80 rounded-md border border-red-200 dark:border-red-800 transition-colors disabled:opacity-50"
+                              onClick={() => setDeletingId(inv.id)}
+                              className="px-2.5 py-1 text-xs font-bold text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950/60 hover:bg-red-100 dark:hover:bg-red-900/80 rounded-md border border-red-200 dark:border-red-800 transition-colors"
                             >
-                              {deleting === inv.id ? '...' : 'حذف'}
+                              حذف
                             </button>
                           )}
                         </div>
@@ -305,7 +320,7 @@ export function InvoiceList({ invoices, userRole, userPermissions = [] }: Invoic
             </div>
           </div>
 
-          {/* Corporate Professional Pagination Bar */}
+          {/* Corporate Pagination Bar */}
           {filtered.length > 0 && (
             <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-md p-3 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
               <div className="text-slate-600 dark:text-slate-400 font-semibold">

@@ -3,12 +3,17 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ALL_PERMISSIONS } from '@/lib/types';
+import { ConfirmModal } from '@/components/ui/ConfirmModal';
+import { useToast } from '@/components/providers/ToastProvider';
 
 export function UsersClient({ users }: { users: any[] }) {
   const router = useRouter();
+  const { showToast } = useToast();
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deletingLoading, setDeletingLoading] = useState(false);
 
   const [form, setForm] = useState({
     name: '',
@@ -63,6 +68,11 @@ export function UsersClient({ users }: { users: any[] }) {
         throw new Error(err.error || 'فشل الحفظ');
       }
 
+      showToast({
+        type: 'success',
+        message: editingId ? 'تم تحديث بيانات وصلاحيات المستخدم بنجاح' : 'تم إضافة المستخدم وتحديد الصلاحيات بنجاح',
+      });
+
       setShowForm(false);
       setEditingId(null);
       setForm({
@@ -74,7 +84,7 @@ export function UsersClient({ users }: { users: any[] }) {
       });
       router.refresh();
     } catch (err: any) {
-      alert(err.message || 'حدث خطأ أثناء الحفظ');
+      showToast({ type: 'error', message: err.message || 'حدث خطأ أثناء الحفظ' });
     } finally {
       setLoading(false);
     }
@@ -98,17 +108,23 @@ export function UsersClient({ users }: { users: any[] }) {
     setShowForm(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('هل أنت متأكد من حذف هذا المستخدم؟')) return;
+  const executeDelete = async () => {
+    if (!deletingId) return;
+    setDeletingLoading(true);
     try {
-      const res = await fetch(`/api/users?id=${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/users?id=${deletingId}`, { method: 'DELETE' });
       if (!res.ok) {
         const err = await res.json();
         throw new Error(err.error || 'فشل الحذف');
       }
+
+      showToast({ type: 'success', message: 'تم حذف المستخدم بنجاح' });
+      setDeletingId(null);
       router.refresh();
     } catch (err: any) {
-      alert(err.message || 'حدث خطأ أثناء الحذف');
+      showToast({ type: 'error', message: err.message || 'حدث خطأ أثناء الحذف' });
+    } finally {
+      setDeletingLoading(false);
     }
   };
 
@@ -116,6 +132,19 @@ export function UsersClient({ users }: { users: any[] }) {
 
   return (
     <div className="space-y-6 animate-fade-in">
+      {/* Confirm Delete Modal */}
+      <ConfirmModal
+        isOpen={!!deletingId}
+        title="تأكيد حذف المستخدم"
+        message="هل أنت متأكد من رغبتك في حذف هذا المستخدم وإلغاء جميع صلاحيات الدخول الخاصة به؟"
+        confirmText="نعم، حذف المستخدم"
+        cancelText="إلغاء"
+        type="danger"
+        loading={deletingLoading}
+        onConfirm={executeDelete}
+        onCancel={() => setDeletingId(null)}
+      />
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-4">
         <div>
@@ -316,8 +345,6 @@ export function UsersClient({ users }: { users: any[] }) {
 
                 return (
                   <tr key={user.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                    
-                    {/* User Info */}
                     <td className="p-3">
                       <div className="flex items-center gap-2.5">
                         <div className={`w-8 h-8 rounded-md flex items-center justify-center font-bold text-xs ${
@@ -334,7 +361,6 @@ export function UsersClient({ users }: { users: any[] }) {
                       </div>
                     </td>
 
-                    {/* Role */}
                     <td className="p-3">
                       <span className={`inline-block px-2.5 py-0.5 rounded text-[11px] font-bold border ${
                         isSuper
@@ -345,7 +371,6 @@ export function UsersClient({ users }: { users: any[] }) {
                       </span>
                     </td>
 
-                    {/* Permissions */}
                     <td className="p-3">
                       {isSuper ? (
                         <span className="text-[11px] font-bold text-slate-600 dark:text-slate-400">كامل صلاحيات النظام (Super Admin)</span>
@@ -368,7 +393,6 @@ export function UsersClient({ users }: { users: any[] }) {
                       )}
                     </td>
 
-                    {/* Actions */}
                     <td className="p-3 text-center">
                       {!isSuper ? (
                         <div className="flex items-center justify-center gap-1.5">
@@ -379,7 +403,7 @@ export function UsersClient({ users }: { users: any[] }) {
                             تعديل الصلاحيات
                           </button>
                           <button
-                            onClick={() => handleDelete(user.id)}
+                            onClick={() => setDeletingId(user.id)}
                             className="px-2.5 py-1 text-xs font-bold text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950 hover:bg-red-100 rounded border border-red-200 dark:border-red-800 transition-colors"
                           >
                             حذف

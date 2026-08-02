@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { AuthProvider } from "@/components/providers/AuthProvider";
+import { ToastProvider } from "@/components/providers/ToastProvider";
 
 export const metadata: Metadata = {
   title: "منصة الإدارة المالية — خالد الشهراني",
@@ -18,7 +19,9 @@ export default function RootLayout({
       <body className="min-h-screen bg-surface-secondary text-text-primary font-sans antialiased">
         <AuthProvider>
           <ThemeProvider>
-            {children}
+            <ToastProvider>
+              {children}
+            </ToastProvider>
           </ThemeProvider>
         </AuthProvider>
       </body>

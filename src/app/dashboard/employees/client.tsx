@@ -1,25 +1,49 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { deleteEmployee } from '@/features/employees/actions';
 import { formatCurrency } from '@/lib/utils';
 import Link from 'next/link';
+import { ConfirmModal } from '@/components/ui/ConfirmModal';
+import { useToast } from '@/components/providers/ToastProvider';
 
 export function EmployeeListClient({ employees }: { employees: any[] }) {
   const router = useRouter();
+  const { showToast } = useToast();
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [loadingDelete, setLoadingDelete] = useState(false);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('هل أنت متأكد من حذف هذا الموظف؟')) return;
+  const executeDelete = async () => {
+    if (!deletingId) return;
+    setLoadingDelete(true);
     try {
-      await deleteEmployee(id);
+      await deleteEmployee(deletingId);
+      showToast({ type: 'success', message: 'تم حذف الموظف بنجاح' });
+      setDeletingId(null);
       router.refresh();
-    } catch {
-      alert('حدث خطأ أثناء حذف الموظف');
+    } catch (err: any) {
+      showToast({ type: 'error', message: err.message || 'حدث خطأ أثناء حذف الموظف' });
+    } finally {
+      setLoadingDelete(false);
     }
   };
 
   return (
     <div className="space-y-6 animate-fade-in">
+      {/* Confirm Delete Modal */}
+      <ConfirmModal
+        isOpen={!!deletingId}
+        title="تأكيد حذف الموظف"
+        message="هل أنت متأكد من رغبتك في حذف هذا الموظف من النظام؟"
+        confirmText="نعم، حذف الموظف"
+        cancelText="إلغاء"
+        type="danger"
+        loading={loadingDelete}
+        onConfirm={executeDelete}
+        onCancel={() => setDeletingId(null)}
+      />
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-4">
         <div>
@@ -57,8 +81,6 @@ export function EmployeeListClient({ employees }: { employees: any[] }) {
               <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
                 {employees.map((emp) => (
                   <tr key={emp.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                    
-                    {/* Name */}
                     <td className="p-3">
                       <div className="flex items-center gap-2.5">
                         <div className="w-8 h-8 rounded bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300 border border-purple-200 dark:border-purple-800 flex items-center justify-center font-bold text-xs">
@@ -71,29 +93,24 @@ export function EmployeeListClient({ employees }: { employees: any[] }) {
                       </div>
                     </td>
 
-                    {/* Position */}
                     <td className="p-3 font-semibold text-slate-800 dark:text-slate-200">
                       {emp.position}
                     </td>
 
-                    {/* Salary */}
                     <td className="p-3 font-extrabold text-purple-700 dark:text-purple-300">
                       {formatCurrency(emp.salary, emp.currency)}
                     </td>
 
-                    {/* Phone */}
                     <td className="p-3 text-slate-600 dark:text-slate-400 font-mono font-medium" dir="ltr">
                       {emp.phone || '—'}
                     </td>
 
-                    {/* Invoices Count */}
                     <td className="p-3 text-center font-semibold">
                       <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded text-[11px] font-bold text-slate-800 dark:text-slate-200">
                         {emp._count?.invoices || 0} فاتورة
                       </span>
                     </td>
 
-                    {/* Status */}
                     <td className="p-3 text-center">
                       <span className={`inline-block px-2.5 py-0.5 rounded text-[11px] font-bold border ${
                         emp.isActive
@@ -104,10 +121,9 @@ export function EmployeeListClient({ employees }: { employees: any[] }) {
                       </span>
                     </td>
 
-                    {/* Actions */}
                     <td className="p-3 text-center">
                       <button
-                        onClick={() => handleDelete(emp.id)}
+                        onClick={() => setDeletingId(emp.id)}
                         className="px-2.5 py-1 text-xs font-bold text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950 hover:bg-red-100 rounded border border-red-200 dark:border-red-800 transition-colors"
                       >
                         حذف
