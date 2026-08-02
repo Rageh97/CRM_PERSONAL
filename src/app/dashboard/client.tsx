@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 import { StatCard, RecentInvoicesList, BestWorstCard } from '@/features/dashboard/components';
 import { MonthlyChart } from '@/features/dashboard/Chart';
 import { formatCurrency } from '@/lib/utils';
@@ -14,14 +15,50 @@ interface DashboardClientProps {
 }
 
 export function DashboardClient({ stats, monthlyData, recentInvoices, bestWorst }: DashboardClientProps) {
+  const { data: session } = useSession();
   const [chartType, setChartType] = useState<'bar' | 'line'>('bar');
+  const [isMorning, setIsMorning] = useState(true);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    const hour = new Date().getHours();
+    setIsMorning(hour < 12);
+  }, []);
+
+  const userName = session?.user?.name || 'خالد الشهراني';
 
   return (
     <div className="space-y-5 animate-fade-in">
-      {/* Page Header */}
-      <div>
-        <h1 className="text-xl sm:text-2xl font-bold text-text-primary">لوحة التحكم</h1>
-        <p className="text-sm text-text-muted mt-1">نظرة عامة على الوضع المالي</p>
+      {/* Dynamic Header with Greeting & Supplication (Icons AFTER text) */}
+      <div className="border-b border-slate-200 dark:border-slate-800 pb-4 space-y-1">
+        <div className="flex items-center gap-2">
+          <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">
+            {mounted ? (isMorning ? 'صباح الخير' : 'مساء الخير') : 'مرحباً'}، {userName}
+          </h1>
+
+          {/* Greeting Icon AFTER text */}
+          {mounted && isMorning ? (
+            <div className="w-8 h-8 rounded-md bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 flex items-center justify-center flex-shrink-0">
+              <svg className="w-5 h-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+              </svg>
+            </div>
+          ) : (
+            <div className="w-8 h-8 rounded-md bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 flex items-center justify-center flex-shrink-0">
+              <svg className="w-5 h-5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+              </svg>
+            </div>
+          )}
+        </div>
+
+        <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
+          <span>بارك الله في سعيك ورزقك</span>
+          <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
+          </svg>
+        </div>
       </div>
 
       {/* Stat Cards */}
@@ -98,26 +135,26 @@ export function DashboardClient({ stats, monthlyData, recentInvoices, bestWorst 
       </div>
 
       {/* Charts Section */}
-      <div className="bg-surface rounded-2xl border border-border p-4 sm:p-5 shadow-card">
+      <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-4 sm:p-5 shadow-xs">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-base font-bold text-text-primary">الإحصائيات الشهرية</h2>
-          <div className="flex bg-surface-secondary rounded-lg p-0.5">
+          <h2 className="text-sm font-bold text-slate-900 dark:text-white">الإحصائيات الشهرية للأداء المالي</h2>
+          <div className="flex bg-slate-100 dark:bg-slate-800 rounded-md p-0.5 border border-slate-200 dark:border-slate-700">
             <button
               onClick={() => setChartType('bar')}
-              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+              className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${
                 chartType === 'bar'
-                  ? 'bg-primary text-white shadow-sm'
-                  : 'text-text-muted hover:text-text-primary'
+                  ? 'bg-blue-600 text-white shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
               }`}
             >
               أعمدة
             </button>
             <button
               onClick={() => setChartType('line')}
-              className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+              className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${
                 chartType === 'line'
-                  ? 'bg-primary text-white shadow-sm'
-                  : 'text-text-muted hover:text-text-primary'
+                  ? 'bg-blue-600 text-white shadow-xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
               }`}
             >
               خطوط
@@ -130,10 +167,10 @@ export function DashboardClient({ stats, monthlyData, recentInvoices, bestWorst 
       {/* Bottom Section */}
       <div className="grid lg:grid-cols-3 gap-5">
         {/* Recent Invoices */}
-        <div className="lg:col-span-2 bg-surface rounded-2xl border border-border p-4 sm:p-5 shadow-card">
+        <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-4 sm:p-5 shadow-xs">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-base font-bold text-text-primary">آخر الفواتير</h2>
-            <a href="/dashboard/invoices" className="text-xs text-primary font-medium hover:underline">
+            <h2 className="text-sm font-bold text-slate-900 dark:text-white">آخر الفواتير المسجلة</h2>
+            <a href="/dashboard/invoices" className="text-xs text-blue-600 dark:text-blue-400 font-bold hover:underline">
               عرض الكل
             </a>
           </div>
@@ -141,17 +178,17 @@ export function DashboardClient({ stats, monthlyData, recentInvoices, bestWorst 
         </div>
 
         {/* Best/Worst */}
-        <div className="bg-surface rounded-2xl border border-border p-4 sm:p-5 shadow-card">
-          <h2 className="text-base font-bold text-text-primary mb-3">أداء الشهور</h2>
+        <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-4 sm:p-5 shadow-xs">
+          <h2 className="text-sm font-bold text-slate-900 dark:text-white mb-3">أفضل وأقل الأشهر ربحية</h2>
           <BestWorstCard best={bestWorst.best} worst={bestWorst.worst} />
 
           {/* Quick Summary */}
-          <div className="mt-4 p-3 bg-surface-secondary rounded-xl">
-            <p className="text-xs text-text-muted mb-1">ملخص سريع</p>
-            <p className="text-sm text-text-secondary">
+          <div className="mt-4 p-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-md">
+            <p className="text-[11px] font-semibold text-slate-500 mb-1">ملخص صافي ربح الشهر الحاضر</p>
+            <p className="text-xs font-extrabold text-slate-900 dark:text-white">
               {stats.netProfit >= 0
-                ? `صافي الربح هذا الشهر ${formatCurrency(stats.netProfit)} ✨`
-                : `خسارة هذا الشهر ${formatCurrency(Math.abs(stats.netProfit))} ⚠️`
+                ? `صافي الربح لهذا الشهر: ${formatCurrency(stats.netProfit)}`
+                : `عجز هذا الشهر: ${formatCurrency(Math.abs(stats.netProfit))}`
               }
             </p>
           </div>
