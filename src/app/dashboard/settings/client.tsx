@@ -9,7 +9,9 @@ export function SettingsClient({ settings }: { settings: any }) {
   const router = useRouter();
   const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
+  const [resetLoading, setResetLoading] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [resetSuccess, setResetSuccess] = useState('');
   const [error, setError] = useState('');
 
   const currentUserEmail = session?.user?.email || '';
@@ -31,6 +33,7 @@ export function SettingsClient({ settings }: { settings: any }) {
     e.preventDefault();
     setError('');
     setSaved(false);
+    setResetSuccess('');
 
     if (form.adminPassword && form.adminPassword !== form.confirmPassword) {
       setError('كلمة المرور وتأكيد كلمة المرور غير متطابقين');
@@ -66,38 +69,80 @@ export function SettingsClient({ settings }: { settings: any }) {
     }
   };
 
+  const handleResetDemoData = async () => {
+    const confirmFirst = confirm(
+      '⚠️ تحذير حاسم: هل أنت متأكد من حذف كافة البيانات التجريبية؟\n\nسيتم حذف جميع الفواتير والموظفين والمستخدمين نهائياً، مع الإبقاء فقط على حساب السوبر أدمن الخاص بك.'
+    );
+    if (!confirmFirst) return;
+
+    const confirmSecond = confirm('هل أنت متأكد 100%؟ لا يمكن التراجع عن هذا الإجراء إطلاقاً!');
+    if (!confirmSecond) return;
+
+    setError('');
+    setSaved(false);
+    setResetSuccess('');
+    setResetLoading(true);
+
+    try {
+      const res = await fetch('/api/settings/reset', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'فشل في حذف البيانات التجريبية');
+      }
+
+      const data = await res.json();
+      setResetSuccess(data.message || 'تم مسح كافة البيانات التجريبية بنجاح');
+      router.refresh();
+    } catch (err: any) {
+      setError(err.message || 'حدث خطأ أثناء مسح البيانات التجريبية');
+    } finally {
+      setResetLoading(false);
+    }
+  };
+
   return (
     <div className="max-w-3xl mx-auto space-y-6 animate-fade-in">
       <div>
-        <h1 className="text-xl sm:text-2xl font-bold text-text-primary">إعدادات النظام والشركة</h1>
-        <p className="text-sm text-text-muted mt-1">تخصيص معلومات المنصة والحساب الإداري الرئيسي</p>
+        <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">إعدادات الحساب والنظام</h1>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">تحديث البريد وكلمة المرور وحذف البيانات التجريبية</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {saved && (
-          <div className="bg-success-bg border border-success/20 text-success rounded-lg p-3.5 text-sm text-center font-medium animate-fade-in">
+          <div className="bg-emerald-50 border border-emerald-300 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 rounded-md p-3.5 text-xs text-center font-bold animate-fade-in">
             ✅ تم حفظ الإعدادات وتحديث بيانات الحساب بنجاح
           </div>
         )}
 
+        {resetSuccess && (
+          <div className="bg-blue-50 border border-blue-300 text-blue-800 dark:bg-blue-950 dark:text-blue-300 rounded-md p-4 text-xs text-center font-bold space-y-1 animate-fade-in">
+            <p className="text-sm font-extrabold">🎉 {resetSuccess}</p>
+            <p className="text-[11px] font-normal text-blue-600 dark:text-blue-400">النظام جاهز الآن لاستقبال بياناتك الحقيقية بالكامل.</p>
+          </div>
+        )}
+
         {error && (
-          <div className="bg-danger-bg border border-danger/20 text-danger rounded-lg p-3.5 text-sm text-center font-medium animate-fade-in">
+          <div className="bg-rose-50 border border-rose-300 text-rose-800 dark:bg-rose-950 dark:text-rose-300 rounded-md p-3.5 text-xs text-center font-bold animate-fade-in">
             {error}
           </div>
         )}
 
         {/* Section 1: Super Admin Credentials */}
-        <div className="bg-surface rounded-lg border border-border p-5 sm:p-6 shadow-sm space-y-4">
-          <div className="border-b border-border pb-3">
-            <h2 className="text-base font-bold text-text-primary flex items-center gap-2">
-              🔐 بيانات حساب السوبر أدمن (Super Admin)
+        <div className="bg-white dark:bg-slate-900 rounded-md border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-xs space-y-4">
+          <div className="border-b border-slate-200 dark:border-slate-800 pb-3">
+            <h2 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              بيانات حساب السوبر أدمن (Super Admin)
             </h2>
-            <p className="text-xs text-text-muted mt-0.5">تحديث البريد الإلكتروني وكلمة المرور لحسابك الإداري</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">تحديث البريد الإلكتروني وكلمة المرور لحسابك الإداري</p>
           </div>
 
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-text-secondary mb-1.5">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                 البريد الإلكتروني الحساب الإداري
               </label>
               <input
@@ -107,13 +152,13 @@ export function SettingsClient({ settings }: { settings: any }) {
                 required
                 dir="ltr"
                 placeholder="admin@shahrani.com"
-                className="w-full px-3.5 py-2.5 bg-surface-secondary border border-border rounded-md text-text-primary text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-left"
+                className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-slate-900 dark:text-white text-xs focus:outline-none focus:border-blue-600 transition-all text-left font-mono"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-text-secondary mb-1.5">
-                كلمة المرور الجديدة <span className="text-text-muted font-normal">(اتركها فارغة إذا لم تُرِد التغيير)</span>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                كلمة المرور الجديدة <span className="text-slate-400 font-normal">(اتركها فارغة إذا لم تُرِد التغيير)</span>
               </label>
               <input
                 type="password"
@@ -122,13 +167,13 @@ export function SettingsClient({ settings }: { settings: any }) {
                 minLength={6}
                 dir="ltr"
                 placeholder="••••••••"
-                className="w-full px-3.5 py-2.5 bg-surface-secondary border border-border rounded-md text-text-primary text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-left"
+                className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-slate-900 dark:text-white text-xs focus:outline-none focus:border-blue-600 transition-all text-left font-mono"
               />
             </div>
 
             {form.adminPassword && (
               <div className="sm:col-span-2">
-                <label className="block text-xs font-semibold text-text-secondary mb-1.5">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                   تأكيد كلمة المرور الجديدة
                 </label>
                 <input
@@ -139,127 +184,48 @@ export function SettingsClient({ settings }: { settings: any }) {
                   minLength={6}
                   dir="ltr"
                   placeholder="••••••••"
-                  className="w-full px-3.5 py-2.5 bg-surface-secondary border border-border rounded-md text-text-primary text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-left"
+                  className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-slate-900 dark:text-white text-xs focus:outline-none focus:border-blue-600 transition-all text-left font-mono"
                 />
               </div>
             )}
           </div>
         </div>
 
-        {/* Section 2: Company & System Identity Settings */}
-        <div className="bg-surface rounded-lg border border-border p-5 sm:p-6 shadow-sm space-y-4">
-          <div className="border-b border-border pb-3">
-            <h2 className="text-base font-bold text-text-primary flex items-center gap-2">
-              🏢 بيانات الهوية والنظام
-            </h2>
-            <p className="text-xs text-text-muted mt-0.5">اسم المنصة في الطباعة، الألوان المعتمدة والعملة الافتراضية</p>
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-text-secondary mb-1.5">اسم الشركة / المنصة</label>
-            <input
-              type="text"
-              value={form.companyName}
-              onChange={(e) => setForm({ ...form, companyName: e.target.value })}
-              required
-              className="w-full px-3.5 py-2.5 bg-surface-secondary border border-border rounded-md text-text-primary text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-semibold text-text-secondary mb-1.5">اللون الأساسي</label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="color"
-                  value={form.primaryColor}
-                  onChange={(e) => setForm({ ...form, primaryColor: e.target.value })}
-                  className="w-9 h-9 rounded border border-border cursor-pointer flex-shrink-0"
-                />
-                <input
-                  type="text"
-                  value={form.primaryColor}
-                  onChange={(e) => setForm({ ...form, primaryColor: e.target.value })}
-                  className="w-full px-3 py-2 bg-surface-secondary border border-border rounded-md text-xs font-mono focus:outline-none"
-                />
-              </div>
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-text-secondary mb-1.5">اللون الثانوي</label>
-              <div className="flex items-center gap-2">
-                <input
-                  type="color"
-                  value={form.secondaryColor}
-                  onChange={(e) => setForm({ ...form, secondaryColor: e.target.value })}
-                  className="w-9 h-9 rounded border border-border cursor-pointer flex-shrink-0"
-                />
-                <input
-                  type="text"
-                  value={form.secondaryColor}
-                  onChange={(e) => setForm({ ...form, secondaryColor: e.target.value })}
-                  className="w-full px-3 py-2 bg-surface-secondary border border-border rounded-md text-xs font-mono focus:outline-none"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-semibold text-text-secondary mb-1.5">بريد التواصل للشركة</label>
-              <input
-                type="email"
-                value={form.contactEmail}
-                onChange={(e) => setForm({ ...form, contactEmail: e.target.value })}
-                placeholder="info@shahrani.com"
-                className="w-full px-3.5 py-2.5 bg-surface-secondary border border-border rounded-md text-text-primary text-sm focus:outline-none focus:border-primary transition-all"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-text-secondary mb-1.5">رقم التواصل</label>
-              <input
-                type="text"
-                value={form.contactPhone}
-                onChange={(e) => setForm({ ...form, contactPhone: e.target.value })}
-                placeholder="+966501234567"
-                className="w-full px-3.5 py-2.5 bg-surface-secondary border border-border rounded-md text-text-primary text-sm focus:outline-none focus:border-primary transition-all"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-text-secondary mb-1.5">العنوان المسجل للشركة</label>
-            <input
-              type="text"
-              value={form.contactAddress}
-              onChange={(e) => setForm({ ...form, contactAddress: e.target.value })}
-              placeholder="المملكة العربية السعودية"
-              className="w-full px-3.5 py-2.5 bg-surface-secondary border border-border rounded-md text-text-primary text-sm focus:outline-none focus:border-primary transition-all"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-text-secondary mb-1.5">العملة الافتراضية للنظام</label>
-            <select
-              value={form.defaultCurrency}
-              onChange={(e) => setForm({ ...form, defaultCurrency: e.target.value })}
-              className="w-full px-3.5 py-2.5 bg-surface-secondary border border-border rounded-md text-text-primary text-sm focus:outline-none focus:border-primary transition-all"
-            >
-              {Object.entries(CURRENCY_LABELS).map(([k, v]) => (
-                <option key={k} value={k}>{v}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {/* Save Button */}
+        {/* Save Admin Button */}
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-3 px-4 bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 font-semibold rounded-md shadow-sm transition-colors disabled:opacity-50"
+          className="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-md shadow-xs transition-colors disabled:opacity-50"
         >
-          {loading ? 'جاري حفظ التغييرات...' : 'حفظ الإعدادات والحساب'}
+          {loading ? 'جاري حفظ التغييرات...' : 'حفظ تغييرات الحساب الإداري'}
         </button>
       </form>
+
+      {/* Danger Zone: Delete Demo Data */}
+      <div className="bg-red-50/50 dark:bg-red-950/20 border-2 border-red-200 dark:border-red-900 rounded-md p-5 sm:p-6 space-y-4 mt-8">
+        <div className="border-b border-red-200 dark:border-red-900/60 pb-3">
+          <h2 className="text-sm font-bold text-red-900 dark:text-red-300 flex items-center gap-2">
+            منطقة الإجراءات الحساسة (تفريغ البيانات التجريبية)
+          </h2>
+          <p className="text-xs text-red-700 dark:text-red-400 mt-1 leading-relaxed">
+            حذف كافة البيانات التجريبية بالكامل (الفواتير، الموظفين، والمستخدمين الإضافيين) والبدء بنظام فارغ ونظيف تماماً، مع الإبقاء التام والكامل على حساب السوبر أدمن والبريد وكلمة المرور الخاصة بك.
+          </p>
+        </div>
+
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1">
+          <div className="text-xs text-red-800 dark:text-red-300 font-semibold">
+            تنظيف البيانات وتهيئة النظام لاستقبال بياناتك الحقيقية
+          </div>
+          <button
+            type="button"
+            onClick={handleResetDemoData}
+            disabled={resetLoading}
+            className="w-full sm:w-auto px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-md shadow-xs transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+          >
+            {resetLoading ? 'جاري تفريغ البيانات...' : 'حذف البيانات التجريبية والبدء من الجديد'}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
