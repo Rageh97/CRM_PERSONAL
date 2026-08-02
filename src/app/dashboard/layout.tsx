@@ -27,6 +27,13 @@ const MOBILE_NAV = [
   { href: '#', label: 'المزيد', icon: 'menu', isMenu: true },
 ];
 
+function isLinkActive(itemHref: string, currentPath: string): boolean {
+  if (itemHref === currentPath) return true;
+  if (itemHref === '/dashboard') return false;
+  if (itemHref === '/dashboard/invoices' && currentPath === '/dashboard/invoices/new') return false;
+  return currentPath.startsWith(itemHref + '/');
+}
+
 function NavIcon({ name, className = "w-5 h-5" }: { name: string; className?: string }) {
   const icons: Record<string, React.ReactNode> = {
     home: <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" /></svg>,
@@ -87,7 +94,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* Nav Items */}
         <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
           {filteredNav.map((item) => {
-            const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
+            const isActive = isLinkActive(item.href, pathname);
             return (
               <Link
                 key={item.href}
@@ -183,7 +190,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <nav className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800">
         <div className="flex items-center justify-around px-2 py-1">
           {MOBILE_NAV.map((item) => {
-            const isActive = !item.isMenu && (pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href)));
+            const isActive = !item.isMenu && isLinkActive(item.href, pathname);
             const isAddButton = item.icon === 'plus';
 
             if (item.isMenu) {
