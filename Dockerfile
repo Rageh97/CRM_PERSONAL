@@ -1,12 +1,12 @@
 # ═══════════════════════════════════════════════════
-# Dockerfile for Dokploy / Hostinger VPS Deployment
-# Next.js Standalone + Prisma SQLite Automatic Migration
+# Production Dockerfile for Dokploy / Hostinger VPS
+# Next.js Standalone + PostgreSQL Automatic Migration
 # ═══════════════════════════════════════════════════
 
 # 1. Base Image
 FROM node:20-alpine AS base
 WORKDIR /app
-RUN apk add --no-libc6-compat openssl sqlite
+RUN apk add --no-cache libc6-compat openssl
 
 # 2. Dependencies Stage
 FROM base AS deps
@@ -22,7 +22,7 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
-# Generate Prisma Client & Build Standalone Next.js
+# Generate Prisma Client for PostgreSQL & Build Standalone Next.js
 RUN npx prisma generate
 RUN npm run build
 
@@ -31,7 +31,6 @@ FROM base AS runner
 ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
-ENV DATABASE_URL="file:/app/prisma/dev.db"
 
 # Copy standalone build & static files
 COPY --from=builder /app/public ./public

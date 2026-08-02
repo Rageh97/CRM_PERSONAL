@@ -1,7 +1,31 @@
 version: '3.8'
 
 services:
-  shahrani-finance:
+  # ═══════════════════════════════════════════════════
+  # PostgreSQL 16 Production Database Service
+  # ═══════════════════════════════════════════════════
+  postgres:
+    image: postgres:16-alpine
+    container_name: shahrani-postgres-db
+    restart: always
+    environment:
+      POSTGRES_USER: shahrani_user
+      POSTGRES_PASSWORD: shahrani_secure_password_2026
+      POSTGRES_DB: shahrani_finance_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U shahrani_user -d shahrani_finance_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ═══════════════════════════════════════════════════
+  # Next.js Application Service
+  # ═══════════════════════════════════════════════════
+  web:
     build:
       context: .
       dockerfile: Dockerfile
@@ -12,13 +36,13 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
-      - DATABASE_URL=file:/app/prisma/dev.db
+      - DATABASE_URL=postgresql://shahrani_user:shahrani_secure_password_2026@postgres:5432/shahrani_finance_db?schema=public
       - NEXTAUTH_URL=http://localhost:3000
       - AUTH_SECRET=shahrani_secret_production_key_2026_super_secure
-    volumes:
-      # Persist SQLite database file across Dokploy container deployments
-      - db_data:/app/prisma
+    depends_on:
+      postgres:
+        condition: service_healthy
 
 volumes:
-  db_data:
+  postgres_data:
     driver: local
