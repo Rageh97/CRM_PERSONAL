@@ -35,8 +35,8 @@ export function ConfirmModal({
       badge: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-300',
     },
     info: {
-      button: 'bg-blue-600 hover:bg-blue-700 text-white',
-      badge: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300',
+      button: 'bg-emerald-600 hover:bg-emerald-700 text-white',
+      badge: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300',
     },
   };
 

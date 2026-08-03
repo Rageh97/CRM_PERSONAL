@@ -47,33 +47,33 @@ export function EmployeeForm() {
       <div>
         <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">الاسم الكامل <span className="text-red-500">*</span></label>
         <input type="text" value={form.name} onChange={(e) => setForm({...form, name: e.target.value})} required
-          className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-600 transition-all" placeholder="اسم الموظف" />
+          className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-600 transition-all" placeholder="اسم الموظف" />
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">البريد الإلكتروني</label>
           <input type="email" value={form.email} onChange={(e) => setForm({...form, email: e.target.value})}
-            className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-600 transition-all" placeholder="اختياري" dir="ltr" />
+            className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-600 transition-all" placeholder="اختياري" dir="ltr" />
         </div>
         <div>
           <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">رقم الجوال</label>
           <input type="text" value={form.phone} onChange={(e) => setForm({...form, phone: e.target.value})}
-            className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-600 transition-all" placeholder="اختياري" dir="ltr" />
+            className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-600 transition-all" placeholder="اختياري" dir="ltr" />
         </div>
       </div>
 
       <div>
         <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">المسمى الوظيفي <span className="text-red-500">*</span></label>
         <input type="text" value={form.position} onChange={(e) => setForm({...form, position: e.target.value})} required
-          className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-600 transition-all" placeholder="مثال: مصمم، مبرمج، مسوق" />
+          className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-600 transition-all" placeholder="مثال: مصمم، مبرمج، مسوق" />
       </div>
 
       <div className="grid grid-cols-3 gap-3">
         <div className="col-span-2">
           <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">الراتب <span className="text-red-500">*</span></label>
           <input type="number" step="0.01" value={form.salary} onChange={(e) => setForm({...form, salary: e.target.value})} required
-            className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-600 transition-all font-mono" placeholder="0.00" />
+            className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-600 transition-all font-mono" placeholder="0.00" />
         </div>
         <div>
           <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">العملة</label>
@@ -86,7 +86,7 @@ export function EmployeeForm() {
 
       <div className="flex gap-3 pt-2">
         <button type="submit" disabled={loading}
-          className="flex-1 py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-md shadow-xs transition-all disabled:opacity-50">
+          className="flex-1 py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-md shadow-xs transition-all disabled:opacity-50">
           {loading ? 'جاري الحفظ...' : 'إضافة الموظف'}
         </button>
         <button type="button" onClick={() => router.back()}

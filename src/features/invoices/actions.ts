@@ -147,12 +147,12 @@ export async function getInvoices(filters?: {
     }
   }
 
-  const orderBy: any = {};
+  const orderBy: any[] = [];
   if (filters?.sortBy) {
-    orderBy[filters.sortBy] = filters.sortOrder || 'desc';
-  } else {
-    orderBy.date = 'desc';
+    orderBy.push({ [filters.sortBy]: filters.sortOrder || 'desc' });
   }
+  orderBy.push({ createdAt: 'desc' });
+  orderBy.push({ date: 'desc' });
 
   return prisma.invoice.findMany({
     where,

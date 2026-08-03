@@ -27,8 +27,8 @@ export function MonthlyChart({ data, type = 'bar' }: MonthlyChartProps) {
     if (!ctx) return;
 
     const isDark = document.documentElement.classList.contains('dark');
-    const gridColor = isDark ? 'rgba(148, 163, 184, 0.1)' : 'rgba(226, 232, 240, 0.8)';
-    const textColor = isDark ? '#94a3b8' : '#64748b';
+    const gridColor = isDark ? 'rgba(16, 185, 129, 0.12)' : 'rgba(226, 232, 240, 0.8)';
+    const textColor = isDark ? '#a7f3d0' : '#64748b';
 
     chartRef.current = new Chart(ctx, {
       type,
@@ -38,7 +38,7 @@ export function MonthlyChart({ data, type = 'bar' }: MonthlyChartProps) {
           {
             label: 'إيرادات',
             data: data.map((d) => d.revenue),
-            backgroundColor: type === 'bar' ? 'rgba(16, 185, 129, 0.8)' : 'transparent',
+            backgroundColor: type === 'bar' ? 'rgba(16, 185, 129, 0.85)' : 'transparent',
             borderColor: '#10b981',
             borderWidth: 2,
             borderRadius: type === 'bar' ? 6 : 0,
@@ -50,7 +50,7 @@ export function MonthlyChart({ data, type = 'bar' }: MonthlyChartProps) {
           {
             label: 'نفقات',
             data: data.map((d) => d.expense),
-            backgroundColor: type === 'bar' ? 'rgba(239, 68, 68, 0.8)' : 'transparent',
+            backgroundColor: type === 'bar' ? 'rgba(239, 68, 68, 0.85)' : 'transparent',
             borderColor: '#ef4444',
             borderWidth: 2,
             borderRadius: type === 'bar' ? 6 : 0,
@@ -62,7 +62,7 @@ export function MonthlyChart({ data, type = 'bar' }: MonthlyChartProps) {
           {
             label: 'مسترجعات',
             data: data.map((d) => d.returns),
-            backgroundColor: type === 'bar' ? 'rgba(245, 158, 11, 0.8)' : 'transparent',
+            backgroundColor: type === 'bar' ? 'rgba(245, 158, 11, 0.85)' : 'transparent',
             borderColor: '#f59e0b',
             borderWidth: 2,
             borderRadius: type === 'bar' ? 6 : 0,
@@ -74,7 +74,7 @@ export function MonthlyChart({ data, type = 'bar' }: MonthlyChartProps) {
           {
             label: 'رواتب',
             data: data.map((d) => d.salary),
-            backgroundColor: type === 'bar' ? 'rgba(139, 92, 246, 0.8)' : 'transparent',
+            backgroundColor: type === 'bar' ? 'rgba(139, 92, 246, 0.85)' : 'transparent',
             borderColor: '#8b5cf6',
             borderWidth: 2,
             borderRadius: type === 'bar' ? 6 : 0,
@@ -103,17 +103,17 @@ export function MonthlyChart({ data, type = 'bar' }: MonthlyChartProps) {
               pointStyle: 'circle',
               padding: 16,
               font: {
-                family: 'IBM Plex Sans Arabic, sans-serif',
+                family: 'Cairo, sans-serif',
                 size: 11,
               },
             },
           },
           tooltip: {
             rtl: true,
-            backgroundColor: isDark ? '#1e293b' : '#ffffff',
-            titleColor: isDark ? '#f1f5f9' : '#0f172a',
-            bodyColor: isDark ? '#94a3b8' : '#64748b',
-            borderColor: isDark ? '#334155' : '#e2e8f0',
+            backgroundColor: isDark ? '#0f1c16' : '#ffffff',
+            titleColor: isDark ? '#ecfdf5' : '#0f172a',
+            bodyColor: isDark ? '#a7f3d0' : '#64748b',
+            borderColor: isDark ? '#1b382b' : '#e2e8f0',
             borderWidth: 1,
             cornerRadius: 12,
             padding: 12,

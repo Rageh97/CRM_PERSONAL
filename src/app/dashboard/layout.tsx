@@ -66,22 +66,33 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="flex min-h-screen">
       {/* Sidebar (Responsive Mobile Drawer & Desktop Fixed Sidebar) */}
-      <aside className={`fixed inset-y-0 start-0 z-50 w-64 bg-white dark:bg-slate-900 border-e border-slate-200 dark:border-slate-800 flex flex-col transition-transform duration-300 ${
+      <aside className={`fixed inset-y-0 start-0 z-50 w-64 bg-white dark:bg-slate-900 border-e border-slate-200 dark:border-slate-800/80 flex flex-col transition-transform duration-300 ${
         sidebarOpen ? 'translate-x-0 shadow-2xl' : 'translate-x-full lg:translate-x-0'
       }`}>
         {/* Logo */}
-        <div className="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0">
-              <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
-              </svg>
+        <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+          <Link href="/dashboard" className="flex items-center gap-3">
+            {/* Light Theme Logo */}
+            <img
+              src="/logo-light.PNG"
+              alt="شعار المنصة"
+              className="h-11 w-auto object-contain dark:hidden flex-shrink-0"
+            />
+            {/* Dark Theme Logo */}
+            <img
+              src="/logo-light.PNG"
+              alt="شعار المنصة"
+              className="h-11 w-auto object-contain hidden dark:block flex-shrink-0 drop-shadow-md"
+            />
+            <div className="flex flex-col min-w-0">
+              <h2 className="font-extrabold text-sm text-slate-900 dark:text-white leading-tight truncate">
+                الإدارة المالية
+              </h2>
+              <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 truncate">
+                خالد الشهراني
+              </p>
             </div>
-            <div>
-              <h2 className="font-bold text-sm text-slate-900 dark:text-white">الإدارة المالية</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400">خالد الشهراني</p>
-            </div>
-          </div>
+          </Link>
 
           <button
             onClick={() => setSidebarOpen(false)}
@@ -100,13 +111,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 key={item.href}
                 href={item.href}
                 onClick={() => setSidebarOpen(false)}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-xs font-bold transition-colors ${
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-md text-xs font-bold transition-all ${
                   isActive
-                    ? 'bg-blue-600 text-white shadow-xs'
-                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                    ? 'bg-emerald-600 text-white dark:bg-emerald-600 dark:text-white shadow-md border-s-4 border-emerald-400 dark:border-amber-400'
+                    : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
-                <NavIcon name={item.icon} className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-500 dark:text-slate-400'}`} />
+                <NavIcon name={item.icon} className={`w-4 h-4 ${isActive ? 'text-white dark:text-amber-300' : 'text-slate-500 dark:text-slate-400'}`} />
                 {item.label}
               </Link>
             );
@@ -115,27 +126,27 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         {/* User Section */}
         <div className="p-3 border-t border-slate-200 dark:border-slate-800">
-          <div className="flex items-center gap-3 px-3 py-2 mb-2">
-            <div className="w-8 h-8 bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 rounded-md flex items-center justify-center font-bold text-xs flex-shrink-0">
+          <div className="flex items-center gap-3 px-3 py-2 mb-2 bg-slate-50 dark:bg-slate-800/60 rounded-lg border border-slate-100 dark:border-slate-700/60">
+            <div className="w-8 h-8 bg-emerald-100 text-emerald-800 dark:bg-emerald-900/80 dark:text-amber-300 dark:border dark:border-amber-500/30 rounded-md flex items-center justify-center font-bold text-xs flex-shrink-0">
               {session?.user?.name?.charAt(0) || 'U'}
             </div>
             <div className="min-w-0">
               <p className="text-xs font-bold text-slate-900 dark:text-white truncate">{session?.user?.name}</p>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400">{ROLE_LABELS[userRole] || userRole}</p>
+              <p className="text-[11px] text-slate-500 dark:text-amber-400 font-medium">{ROLE_LABELS[userRole] || userRole}</p>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
             <button
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-md text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-md text-xs font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 hover:bg-slate-200 transition-colors border border-transparent dark:border-slate-700/60"
             >
-              <NavIcon name={theme === 'dark' ? 'sun' : 'moon'} className="w-4 h-4" />
+              <NavIcon name={theme === 'dark' ? 'sun' : 'moon'} className="w-4 h-4 text-amber-500" />
               {theme === 'dark' ? 'نهاري' : 'ليلي'}
             </button>
             <button
               onClick={() => signOut({ callbackUrl: '/login' })}
-              className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-md text-xs font-bold text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950 hover:bg-red-100 transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-md text-xs font-bold text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950/80 hover:bg-red-100 transition-colors border border-transparent dark:border-red-900/40"
             >
               <NavIcon name="logout" className="w-4 h-4" />
               خروج
@@ -152,16 +163,31 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Main Content */}
       <main className="flex-1 lg:ps-64 pb-20 lg:pb-0 w-full max-w-full min-w-0 overflow-x-hidden">
         {/* Mobile Header */}
-        <header className="lg:hidden sticky top-0 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-3">
+        <header className="lg:hidden sticky top-0 z-30 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 py-2.5">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5">
               <button
                 onClick={() => setSidebarOpen(true)}
                 className="p-1.5 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md"
               >
                 <NavIcon name="menu" className="w-5 h-5" />
               </button>
-              <h1 className="font-bold text-xs text-slate-900 dark:text-white">الإدارة المالية</h1>
+              <Link href="/dashboard" className="flex items-center gap-2">
+                <img
+                  src="/logo-light.PNG"
+                  alt="شعار المنصة"
+                  className="h-8 w-auto object-contain dark:hidden flex-shrink-0"
+                />
+                <img
+                  src="/logo-night.PNG"
+                  alt="شعار المنصة"
+                  className="h-8 w-auto object-contain hidden dark:block flex-shrink-0 drop-shadow-sm"
+                />
+                <div className="flex flex-col min-w-0">
+                  <span className="font-extrabold text-xs text-slate-900 dark:text-white leading-tight">الإدارة المالية</span>
+                  <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">خالد الشهراني</span>
+                </div>
+              </Link>
             </div>
             <div className="flex items-center gap-2">
               <button
@@ -200,7 +226,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   type="button"
                   onClick={() => setSidebarOpen(!sidebarOpen)}
                   className={`flex flex-col items-center gap-0.5 py-1.5 px-3 rounded-md transition-colors ${
-                    sidebarOpen ? 'text-blue-600 font-bold' : 'text-slate-500 dark:text-slate-400'
+                    sidebarOpen ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-slate-500 dark:text-slate-400'
                   }`}
                 >
                   <NavIcon name={item.icon} className="w-5 h-5" />
@@ -217,18 +243,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   isAddButton
                     ? 'relative -mt-4'
                     : isActive
-                    ? 'text-blue-600 font-bold'
+                    ? 'text-emerald-600 dark:text-emerald-400 font-bold'
                     : 'text-slate-500 dark:text-slate-400'
                 }`}
               >
                 {isAddButton ? (
-                  <div className="w-11 h-11 bg-blue-600 rounded-full flex items-center justify-center shadow-md text-white">
+                  <div className="w-11 h-11 bg-emerald-600 rounded-full flex items-center justify-center shadow-md text-white">
                     <NavIcon name={item.icon} className="w-5 h-5" />
                   </div>
                 ) : (
                   <NavIcon name={item.icon} className="w-5 h-5" />
                 )}
-                <span className={`text-[10px] font-bold ${isAddButton ? 'text-blue-600 mt-0.5' : ''}`}>
+                <span className={`text-[10px] font-bold ${isAddButton ? 'text-emerald-600 dark:text-emerald-400 mt-0.5' : ''}`}>
                   {item.label}
                 </span>
               </Link>

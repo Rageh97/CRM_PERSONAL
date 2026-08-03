@@ -82,7 +82,7 @@ export function InvoiceForm({ invoice, employees = [], mode = 'create' }: Invoic
           onChange={(e) => setForm({ ...form, name: e.target.value })}
           placeholder="مثال: اشتراك خوادم ورخص برمجية"
           required
-          className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-600 transition-colors"
+          className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-600 transition-colors"
         />
       </div>
 
@@ -100,7 +100,7 @@ export function InvoiceForm({ invoice, employees = [], mode = 'create' }: Invoic
             onChange={(e) => setForm({ ...form, amount: e.target.value })}
             placeholder="0.00"
             required
-            className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-600 transition-colors font-mono"
+            className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-600 transition-colors font-mono"
           />
         </div>
         <div>
@@ -108,7 +108,7 @@ export function InvoiceForm({ invoice, employees = [], mode = 'create' }: Invoic
           <select
             value={form.currency}
             onChange={(e) => setForm({ ...form, currency: e.target.value })}
-            className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-xs font-semibold text-slate-900 dark:text-white focus:outline-none focus:border-blue-600 transition-colors"
+            className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-xs font-semibold text-slate-900 dark:text-white focus:outline-none focus:border-emerald-600 transition-colors"
           >
             {Object.entries(CURRENCY_LABELS).map(([key, label]) => (
               <option key={key} value={key}>{label}</option>
@@ -130,7 +130,7 @@ export function InvoiceForm({ invoice, employees = [], mode = 'create' }: Invoic
               onClick={() => setForm({ ...form, category: key, employeeId: key !== 'SALARY' ? '' : form.employeeId })}
               className={`py-2 px-3 text-xs font-bold rounded-md border transition-all ${
                 form.category === key
-                  ? 'bg-blue-600 text-white border-blue-600 shadow-xs'
+                  ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs'
                   : 'bg-slate-50 dark:bg-slate-950 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-100'
               }`}
             >
@@ -167,7 +167,7 @@ export function InvoiceForm({ invoice, employees = [], mode = 'create' }: Invoic
           value={form.date}
           onChange={(e) => setForm({ ...form, date: e.target.value })}
           required
-          className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-600 transition-colors"
+          className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-600 transition-colors"
         />
       </div>
 
@@ -179,7 +179,7 @@ export function InvoiceForm({ invoice, employees = [], mode = 'create' }: Invoic
           onChange={(e) => setForm({ ...form, description: e.target.value })}
           rows={3}
           placeholder="إضافة تفاصيل وملاحظات اختيارية..."
-          className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-600 transition-colors"
+          className="w-full px-3.5 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-md text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-600 transition-colors"
         />
       </div>
 
@@ -195,7 +195,7 @@ export function InvoiceForm({ invoice, employees = [], mode = 'create' }: Invoic
         <button
           type="submit"
           disabled={loading}
-          className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-md shadow-xs transition-colors disabled:opacity-50"
+          className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-md shadow-xs transition-colors disabled:opacity-50"
         >
           {loading ? 'جاري الحفظ...' : mode === 'edit' ? 'تحديث الفاتورة' : 'إنشاء الفاتورة'}
         </button>
